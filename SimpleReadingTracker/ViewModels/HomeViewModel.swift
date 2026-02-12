@@ -1,0 +1,39 @@
+import Foundation
+import Observation
+import SwiftData
+
+@Observable
+final class HomeViewModel {
+    private let modelContext: ModelContext
+
+    private(set) var currentlyReading: [Book] = []
+    private(set) var recentlyRead: [Book] = []
+    private(set) var error: String?
+
+    init(modelContext: ModelContext) {
+        self.modelContext = modelContext
+    }
+
+    func fetchBooks() {
+        do {
+            let readingStatus = ReadingStatus.reading.rawValue
+            var readingDescriptor = FetchDescriptor<Book>(
+                predicate: #Predicate { $0.statusRawValue == readingStatus },
+                sortBy: [SortDescriptor(\.dateStarted, order: .reverse)]
+            )
+            currentlyReading = try modelContext.fetch(readingDescriptor)
+
+            let readStatus = ReadingStatus.read.rawValue
+            var recentDescriptor = FetchDescriptor<Book>(
+                predicate: #Predicate { $0.statusRawValue == readStatus },
+                sortBy: [SortDescriptor(\.dateFinished, order: .reverse)]
+            )
+            recentDescriptor.fetchLimit = 5
+            recentlyRead = try modelContext.fetch(recentDescriptor)
+
+            error = nil
+        } catch {
+            self.error = PersistenceError.fetchFailed(underlying: error).localizedDescription
+        }
+    }
+}
