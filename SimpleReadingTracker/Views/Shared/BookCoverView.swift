@@ -4,6 +4,7 @@ struct BookCoverView: View {
     let coverImageData: Data?
     let coverImageURL: String?
     let size: CGSize
+    var cornerRadius: CGFloat = 8
 
     var body: some View {
         Group {
@@ -30,11 +31,11 @@ struct BookCoverView: View {
             }
         }
         .frame(width: size.width, height: size.height)
-        .clipShape(RoundedRectangle(cornerRadius: 8))
+        .clipShape(RoundedRectangle(cornerRadius: cornerRadius))
     }
 
     private var placeholder: some View {
-        RoundedRectangle(cornerRadius: 8)
+        RoundedRectangle(cornerRadius: cornerRadius)
             .fill(.quaternary)
             .frame(width: size.width, height: size.height)
             .overlay {

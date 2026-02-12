@@ -17,7 +17,7 @@ final class HomeViewModel {
     func fetchBooks() {
         do {
             let readingStatus = ReadingStatus.reading.rawValue
-            var readingDescriptor = FetchDescriptor<Book>(
+            let readingDescriptor = FetchDescriptor<Book>(
                 predicate: #Predicate { $0.statusRawValue == readingStatus },
                 sortBy: [SortDescriptor(\.dateStarted, order: .reverse)]
             )
@@ -28,7 +28,7 @@ final class HomeViewModel {
                 predicate: #Predicate { $0.statusRawValue == readStatus },
                 sortBy: [SortDescriptor(\.dateFinished, order: .reverse)]
             )
-            recentDescriptor.fetchLimit = 5
+            recentDescriptor.fetchLimit = 3
             recentlyRead = try modelContext.fetch(recentDescriptor)
 
             error = nil

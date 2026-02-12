@@ -14,6 +14,14 @@ struct LibraryScreen: View {
                 ProgressView()
             }
         }
+        .background {
+            LinearGradient(
+                colors: [Color(.systemBackground), Color.blue.opacity(0.05)],
+                startPoint: .top,
+                endPoint: .bottom
+            )
+            .ignoresSafeArea()
+        }
         .navigationTitle("Library")
         .task {
             if viewModel == nil {
@@ -36,9 +44,9 @@ struct LibraryScreen: View {
                 EmptyStateView(
                     systemImage: "magnifyingglass",
                     title: "No Books Found",
-                    message: vm.searchText.isEmpty
-                        ? "Your library is empty. Add a book to get started."
-                        : "No books match your search."
+                    message: vm.hasActiveFilters
+                        ? "No books match your current filters. Try adjusting or clearing them."
+                        : "Your library is empty. Add a book to get started."
                 )
                 .listRowSeparator(.hidden)
             } else {

@@ -20,6 +20,12 @@ final class LibraryViewModel {
         searchResults.map(\.book)
     }
 
+    var hasActiveFilters: Bool {
+        !searchText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+            || statusFilter != nil
+            || ratingFilter != nil
+    }
+
     init(modelContext: ModelContext) {
         self.modelContext = modelContext
     }

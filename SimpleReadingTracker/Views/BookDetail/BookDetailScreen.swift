@@ -18,7 +18,16 @@ struct BookDetailScreen: View {
                 ProgressView()
             }
         }
+        .background {
+            LinearGradient(
+                colors: [Color(.systemBackground), Color.blue.opacity(0.05)],
+                startPoint: .top,
+                endPoint: .bottom
+            )
+            .ignoresSafeArea()
+        }
         .navigationBarTitleDisplayMode(.inline)
+        .navigationTitle("Book details")
         .task {
             viewModel = BookDetailViewModel(book: book, modelContext: modelContext)
         }

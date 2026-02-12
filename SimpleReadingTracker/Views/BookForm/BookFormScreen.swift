@@ -103,20 +103,18 @@ struct BookFormScreen: View {
                 Spacer()
             }
 
-            HStack {
-                PhotosPicker(
-                    selection: $selectedPhoto,
-                    matching: .images
-                ) {
-                    Label("Photo Library", systemImage: "photo.on.rectangle")
-                }
+            PhotosPicker(
+                selection: $selectedPhoto,
+                matching: .images
+            ) {
+                Label("Photo Library", systemImage: "photo.on.rectangle")
+            }
 
-                if CameraImagePicker.isAvailable {
-                    Button {
-                        showingCamera = true
-                    } label: {
-                        Label("Camera", systemImage: "camera")
-                    }
+            if CameraImagePicker.isAvailable {
+                Button {
+                    showingCamera = true
+                } label: {
+                    Label("Camera", systemImage: "camera")
                 }
             }
 
