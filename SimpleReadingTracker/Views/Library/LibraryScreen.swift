@@ -15,9 +15,12 @@ struct LibraryScreen: View {
         }
         .navigationTitle("Library")
         .task {
-            let vm = LibraryViewModel(modelContext: modelContext)
-            viewModel = vm
-            vm.fetchBooks()
+            if viewModel == nil {
+                viewModel = LibraryViewModel(modelContext: modelContext)
+            }
+        }
+        .onAppear {
+            viewModel?.fetchBooks()
         }
     }
 

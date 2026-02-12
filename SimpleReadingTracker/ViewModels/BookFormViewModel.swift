@@ -1,9 +1,7 @@
-import CoreGraphics
 import Foundation
-import ImageIO
 import Observation
 import SwiftData
-import UniformTypeIdentifiers
+import UIKit
 
 enum BookFormMode {
     case add
@@ -254,58 +252,26 @@ final class BookFormViewModel {
     }
 
     static func compressImage(_ data: Data, maxWidth: CGFloat, quality: CGFloat) -> Data? {
-        guard let source = CGImageSourceCreateWithData(data as CFData, nil),
-              let cgImage = CGImageSourceCreateImageAtIndex(source, 0, nil) else {
-            return nil
-        }
+        guard let image = UIImage(data: data) else { return nil }
 
-        let originalWidth = CGFloat(cgImage.width)
-        let originalHeight = CGFloat(cgImage.height)
-
+        let originalSize = image.size
         let scale: CGFloat
-        if originalWidth > maxWidth {
-            scale = maxWidth / originalWidth
+        if originalSize.width > maxWidth {
+            scale = maxWidth / originalSize.width
         } else {
             scale = 1.0
         }
 
-        let newWidth = Int(originalWidth * scale)
-        let newHeight = Int(originalHeight * scale)
+        let newSize = CGSize(
+            width: originalSize.width * scale,
+            height: originalSize.height * scale
+        )
 
-        guard let colorSpace = cgImage.colorSpace ?? CGColorSpace(name: CGColorSpace.sRGB),
-              let context = CGContext(
-                  data: nil,
-                  width: newWidth,
-                  height: newHeight,
-                  bitsPerComponent: 8,
-                  bytesPerRow: 0,
-                  space: colorSpace,
-                  bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue
-              ) else {
-            return nil
+        let renderer = UIGraphicsImageRenderer(size: newSize)
+        let resizedData = renderer.jpegData(withCompressionQuality: quality) { context in
+            image.draw(in: CGRect(origin: .zero, size: newSize))
         }
 
-        context.interpolationQuality = .high
-        context.draw(cgImage, in: CGRect(x: 0, y: 0, width: newWidth, height: newHeight))
-
-        guard let resizedImage = context.makeImage() else { return nil }
-
-        let destData = NSMutableData()
-        guard let destination = CGImageDestinationCreateWithData(
-            destData as CFMutableData,
-            UTType.jpeg.identifier as CFString,
-            1,
-            nil
-        ) else {
-            return nil
-        }
-
-        let options: [CFString: Any] = [
-            kCGImageDestinationLossyCompressionQuality: quality
-        ]
-        CGImageDestinationAddImage(destination, resizedImage, options as CFDictionary)
-        guard CGImageDestinationFinalize(destination) else { return nil }
-
-        return destData as Data
+        return resizedData
     }
 }
