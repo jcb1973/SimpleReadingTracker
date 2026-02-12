@@ -35,10 +35,10 @@ struct CameraPreviewView: UIViewRepresentable {
                 previewLayer.frame = view.bounds
                 view.layer.addSublayer(previewLayer)
                 coordinator.previewLayer = previewLayer
+                coordinator.session = session
                 view.previewLayer = previewLayer
             }
 
-            coordinator.session = session
             session.startRunning()
         }
 
