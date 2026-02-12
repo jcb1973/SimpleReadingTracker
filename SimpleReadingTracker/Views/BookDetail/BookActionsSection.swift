@@ -6,25 +6,7 @@ struct BookActionsSection: View {
     @Binding var showingDeleteConfirmation: Bool
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 16) {
-            Text("Actions")
-                .font(.headline)
-
-            ratingSection
-            buttonSection
-        }
-    }
-
-    private var ratingSection: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            Text("Rating")
-                .font(.subheadline)
-                .foregroundStyle(.secondary)
-            StarRatingView(rating: Binding(
-                get: { viewModel.book.rating },
-                set: { viewModel.updateRating($0) }
-            ))
-        }
+        buttonSection
     }
 
     private var buttonSection: some View {

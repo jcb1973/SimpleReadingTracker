@@ -5,6 +5,7 @@ struct BookInfoSection: View {
     let book: Book
     var onCoverImageSelected: ((Data) -> Void)?
     var onStatusTapped: (() -> Void)?
+    var onRatingChanged: ((Int?) -> Void)?
 
     @State private var selectedPhoto: PhotosPickerItem?
 
@@ -36,15 +37,10 @@ struct BookInfoSection: View {
                     StatusBadge(status: book.status)
                 }
                 .buttonStyle(.plain)
-                if let rating = book.rating {
-                    HStack(spacing: 2) {
-                        ForEach(1...rating, id: \.self) { _ in
-                            Image(systemName: "star.fill")
-                                .foregroundStyle(.yellow)
-                        }
-                    }
-                    .font(.caption)
-                }
+                StarRatingView(rating: Binding(
+                    get: { book.rating },
+                    set: { onRatingChanged?($0) }
+                ))
             }
         }
         .onChange(of: selectedPhoto) { _, newItem in

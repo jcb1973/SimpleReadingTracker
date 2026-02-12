@@ -5,14 +5,18 @@ import SwiftData
 @Observable
 final class BookDetailViewModel {
     private let modelContext: ModelContext
+    private var noteSaveTask: Task<Void, Never>?
 
     let book: Book
-    var noteText = ""
+    var noteText: String {
+        didSet { debounceSaveNotes() }
+    }
     private(set) var error: String?
 
     init(book: Book, modelContext: ModelContext) {
         self.book = book
         self.modelContext = modelContext
+        self.noteText = book.userNotes ?? ""
     }
 
     func updateStatus(_ status: ReadingStatus) {
@@ -45,20 +49,19 @@ final class BookDetailViewModel {
         save()
     }
 
-    func addNote() {
-        let content = noteText.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !content.isEmpty else { return }
-
-        let note = Note(content: content, book: book)
-        book.notes.append(note)
-        noteText = ""
+    func saveNotesNow() {
+        noteSaveTask?.cancel()
+        book.userNotes = noteText.isEmpty ? nil : noteText
         save()
     }
 
-    func deleteNote(_ note: Note) {
-        book.notes.removeAll { $0.persistentModelID == note.persistentModelID }
-        modelContext.delete(note)
-        save()
+    private func debounceSaveNotes() {
+        noteSaveTask?.cancel()
+        noteSaveTask = Task { [weak self] in
+            try? await Task.sleep(for: .seconds(1))
+            guard !Task.isCancelled else { return }
+            self?.saveNotesNow()
+        }
     }
 
     func deleteBook() {
@@ -68,10 +71,6 @@ final class BookDetailViewModel {
         } catch {
             self.error = PersistenceError.deleteFailed(underlying: error).localizedDescription
         }
-    }
-
-    var sortedNotes: [Note] {
-        book.notes.sorted { $0.createdAt > $1.createdAt }
     }
 
     private func save() {

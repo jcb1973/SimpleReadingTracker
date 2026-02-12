@@ -8,8 +8,8 @@ struct ContentView: View {
         TabView(selection: $selectedTab) {
             NavigationStack {
                 HomeScreen()
+                    .addBookOverlay(showingAddBook: $showingAddBook)
             }
-            .addBookOverlay(showingAddBook: $showingAddBook)
             .tabItem {
                 Label("Home", systemImage: "house.fill")
             }
@@ -17,8 +17,8 @@ struct ContentView: View {
 
             NavigationStack {
                 LibraryScreen()
+                    .addBookOverlay(showingAddBook: $showingAddBook)
             }
-            .addBookOverlay(showingAddBook: $showingAddBook)
             .tabItem {
                 Label("Library", systemImage: "books.vertical.fill")
             }

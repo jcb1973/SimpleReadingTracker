@@ -16,6 +16,7 @@ final class Book {
     var dateAdded: Date
     var dateStarted: Date?
     var dateFinished: Date?
+    var userNotes: String?
 
     @Relationship(deleteRule: .cascade, inverse: \Note.book)
     var notes: [Note]

@@ -41,70 +41,61 @@ struct BookDetailViewModelTests {
         #expect(book.rating == nil)
     }
 
-    @Test @MainActor func addNoteAppendsToBook() throws {
+    @Test @MainActor func saveNotesNowPersistsText() throws {
         let container = try ModelFactory.makeContainer()
         let context = container.mainContext
         let book = ModelFactory.makeBook(title: "Test", in: context)
         try context.save()
 
         let vm = BookDetailViewModel(book: book, modelContext: context)
-        vm.noteText = "A great note"
-        vm.addNote()
+        vm.noteText = "My notes about this book"
+        vm.saveNotesNow()
 
-        #expect(book.notes.count == 1)
-        #expect(book.notes.first?.content == "A great note")
-        #expect(vm.noteText.isEmpty)
+        #expect(book.userNotes == "My notes about this book")
     }
 
-    @Test @MainActor func addEmptyNoteDoesNothing() throws {
+    @Test @MainActor func saveEmptyNotesClearsUserNotes() throws {
         let container = try ModelFactory.makeContainer()
         let context = container.mainContext
         let book = ModelFactory.makeBook(title: "Test", in: context)
+        book.userNotes = "Old notes"
         try context.save()
 
         let vm = BookDetailViewModel(book: book, modelContext: context)
-        vm.noteText = "   "
-        vm.addNote()
+        vm.noteText = ""
+        vm.saveNotesNow()
 
-        #expect(book.notes.isEmpty)
+        #expect(book.userNotes == nil)
     }
 
-    @Test @MainActor func deleteNoteRemovesFromBook() throws {
+    @Test @MainActor func initPopulatesNoteTextFromBook() throws {
         let container = try ModelFactory.makeContainer()
         let context = container.mainContext
         let book = ModelFactory.makeBook(title: "Test", in: context)
-        let note = ModelFactory.makeNote(content: "Delete me", book: book, in: context)
-        book.notes.append(note)
+        book.userNotes = "Existing notes"
         try context.save()
 
         let vm = BookDetailViewModel(book: book, modelContext: context)
-        vm.deleteNote(note)
 
-        #expect(book.notes.isEmpty)
+        #expect(vm.noteText == "Existing notes")
     }
 
-    @Test @MainActor func sortedNotesDescendingByDate() throws {
+    @Test @MainActor func cycleStatusRotatesCorrectly() throws {
         let container = try ModelFactory.makeContainer()
         let context = container.mainContext
-        let book = ModelFactory.makeBook(title: "Test", in: context)
-
-        let note1 = Note(content: "First", book: book)
-        note1.createdAt = Date(timeIntervalSince1970: 1000)
-        context.insert(note1)
-        book.notes.append(note1)
-
-        let note2 = Note(content: "Second", book: book)
-        note2.createdAt = Date(timeIntervalSince1970: 2000)
-        context.insert(note2)
-        book.notes.append(note2)
-
+        let book = ModelFactory.makeBook(title: "Test", status: .toRead, in: context)
         try context.save()
 
         let vm = BookDetailViewModel(book: book, modelContext: context)
-        let sorted = vm.sortedNotes
 
-        #expect(sorted.first?.content == "Second")
-        #expect(sorted.last?.content == "First")
+        vm.cycleStatus()
+        #expect(book.status == .reading)
+
+        vm.cycleStatus()
+        #expect(book.status == .read)
+
+        vm.cycleStatus()
+        #expect(book.status == .toRead)
     }
 
     @Test @MainActor func markAsReadSetsDate() throws {

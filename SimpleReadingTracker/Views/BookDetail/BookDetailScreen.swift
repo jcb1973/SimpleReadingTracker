@@ -38,6 +38,9 @@ struct BookDetailScreen: View {
                     },
                     onStatusTapped: {
                         vm.cycleStatus()
+                    },
+                    onRatingChanged: { rating in
+                        vm.updateRating(rating)
                     }
                 )
                 BookNotesSection(viewModel: vm)
