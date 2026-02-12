@@ -45,6 +45,9 @@ struct HomeScreen: View {
             }
             .padding()
         }
+        .navigationDestination(for: Book.self) { book in
+            BookDetailScreen(book: book)
+        }
         .refreshable {
             vm.fetchBooks()
         }

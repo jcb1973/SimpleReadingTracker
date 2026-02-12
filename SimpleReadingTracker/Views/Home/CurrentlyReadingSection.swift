@@ -19,8 +19,5 @@ struct CurrentlyReadingSection: View {
                 }
             }
         }
-        .navigationDestination(for: Book.self) { book in
-            BookDetailScreen(book: book)
-        }
     }
 }

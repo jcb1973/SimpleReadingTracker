@@ -34,8 +34,5 @@ struct RecentlyReadSection: View {
                 .buttonStyle(.plain)
             }
         }
-        .navigationDestination(for: Book.self) { book in
-            BookDetailScreen(book: book)
-        }
     }
 }
