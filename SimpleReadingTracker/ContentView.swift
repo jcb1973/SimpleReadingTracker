@@ -3,11 +3,14 @@ import SwiftUI
 struct ContentView: View {
     @State private var selectedTab = 0
     @State private var showingAddBook = false
+    @State private var homePath = NavigationPath()
+    @State private var libraryPath = NavigationPath()
+    @State private var refreshTrigger = 0
 
     var body: some View {
         TabView(selection: $selectedTab) {
-            NavigationStack {
-                HomeScreen()
+            NavigationStack(path: $homePath) {
+                HomeScreen(refreshTrigger: refreshTrigger)
                     .addBookOverlay(showingAddBook: $showingAddBook)
             }
             .tabItem {
@@ -15,8 +18,8 @@ struct ContentView: View {
             }
             .tag(0)
 
-            NavigationStack {
-                LibraryScreen()
+            NavigationStack(path: $libraryPath) {
+                LibraryScreen(refreshTrigger: refreshTrigger)
                     .addBookOverlay(showingAddBook: $showingAddBook)
             }
             .tabItem {
@@ -24,7 +27,11 @@ struct ContentView: View {
             }
             .tag(1)
         }
-        .sheet(isPresented: $showingAddBook) {
+        .onChange(of: selectedTab) { _, _ in
+            homePath = NavigationPath()
+            libraryPath = NavigationPath()
+        }
+        .sheet(isPresented: $showingAddBook, onDismiss: { refreshTrigger += 1 }) {
             NavigationStack {
                 BookFormScreen(mode: .add)
             }

@@ -6,11 +6,13 @@ import SwiftData
 final class BookDetailViewModel {
     private let modelContext: ModelContext
     private var noteSaveTask: Task<Void, Never>?
+    private var notesSavedDismissTask: Task<Void, Never>?
 
     let book: Book
     var noteText: String {
         didSet { debounceSaveNotes() }
     }
+    private(set) var notesSaved = false
     private(set) var error: String?
 
     init(book: Book, modelContext: ModelContext) {
@@ -53,6 +55,17 @@ final class BookDetailViewModel {
         noteSaveTask?.cancel()
         book.userNotes = noteText.isEmpty ? nil : noteText
         save()
+        showNotesSavedIndicator()
+    }
+
+    private func showNotesSavedIndicator() {
+        notesSavedDismissTask?.cancel()
+        notesSaved = true
+        notesSavedDismissTask = Task { [weak self] in
+            try? await Task.sleep(for: .seconds(2))
+            guard !Task.isCancelled else { return }
+            self?.notesSaved = false
+        }
     }
 
     private func debounceSaveNotes() {

@@ -9,6 +9,7 @@ final class LibraryViewModel {
 
     var searchText = ""
     var statusFilter: ReadingStatus?
+    var ratingFilter: Int?
     var sortOption: SortOption = .dateAdded
     var sortAscending = false
 
@@ -27,7 +28,8 @@ final class LibraryViewModel {
         do {
             let predicate = searchService.buildPredicate(
                 searchText: searchText,
-                statusFilter: statusFilter
+                statusFilter: statusFilter,
+                ratingFilter: ratingFilter
             )
             let sortDescriptors = searchService.buildSortDescriptors(
                 option: sortOption,

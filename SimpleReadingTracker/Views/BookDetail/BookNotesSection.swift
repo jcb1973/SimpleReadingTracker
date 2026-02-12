@@ -5,8 +5,17 @@ struct BookNotesSection: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
-            Text("Notes")
-                .font(.headline)
+            HStack(spacing: 6) {
+                Text("Notes")
+                    .font(.headline)
+                if viewModel.notesSaved {
+                    Image(systemName: "checkmark.circle.fill")
+                        .foregroundStyle(.green)
+                        .font(.subheadline)
+                        .transition(.scale.combined(with: .opacity))
+                }
+            }
+            .animation(.easeInOut(duration: 0.2), value: viewModel.notesSaved)
 
             TextEditor(text: $viewModel.noteText)
                 .frame(minHeight: 150)

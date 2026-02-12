@@ -35,34 +35,21 @@ struct SearchResult {
 struct SearchService {
     func buildPredicate(
         searchText: String,
-        statusFilter: ReadingStatus?
+        statusFilter: ReadingStatus?,
+        ratingFilter: Int? = nil
     ) -> Predicate<Book> {
         let trimmed = searchText.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
-
-        if trimmed.isEmpty, let status = statusFilter {
-            let statusRaw = status.rawValue
-            return #Predicate<Book> { book in
-                book.statusRawValue == statusRaw
-            }
-        }
-
-        if trimmed.isEmpty {
-            return #Predicate<Book> { _ in true }
-        }
-
-        if let status = statusFilter {
-            let statusRaw = status.rawValue
-            return #Predicate<Book> { book in
-                book.statusRawValue == statusRaw && (
-                    book.title.localizedStandardContains(trimmed) ||
-                    book.isbn?.localizedStandardContains(trimmed) == true
-                )
-            }
-        }
+        let hasSearch = !trimmed.isEmpty
+        let statusRaw: String? = statusFilter?.rawValue
+        let minRating: Int? = ratingFilter
 
         return #Predicate<Book> { book in
-            book.title.localizedStandardContains(trimmed) ||
-            book.isbn?.localizedStandardContains(trimmed) == true
+            (!hasSearch || (
+                book.title.localizedStandardContains(trimmed) ||
+                book.isbn?.localizedStandardContains(trimmed) == true
+            )) &&
+            (statusRaw == nil || book.statusRawValue == statusRaw!) &&
+            (minRating == nil || book.rating == minRating!)
         }
     }
 

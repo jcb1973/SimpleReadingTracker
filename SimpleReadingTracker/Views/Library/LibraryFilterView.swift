@@ -2,34 +2,69 @@ import SwiftUI
 
 struct LibraryFilterView: View {
     @Binding var statusFilter: ReadingStatus?
+    @Binding var ratingFilter: Int?
+
+    private var hasActiveFilter: Bool {
+        statusFilter != nil || ratingFilter != nil
+    }
 
     var body: some View {
         Menu {
-            Button {
-                statusFilter = nil
-            } label: {
-                HStack {
-                    Text("All")
-                    if statusFilter == nil {
-                        Image(systemName: "checkmark")
+            Section("Status") {
+                Button {
+                    statusFilter = nil
+                } label: {
+                    HStack {
+                        Text("All Statuses")
+                        if statusFilter == nil {
+                            Image(systemName: "checkmark")
+                        }
+                    }
+                }
+
+                ForEach(ReadingStatus.allCases) { status in
+                    Button {
+                        statusFilter = status
+                    } label: {
+                        HStack {
+                            Label(status.displayName, systemImage: status.systemImage)
+                            if statusFilter == status {
+                                Image(systemName: "checkmark")
+                            }
+                        }
                     }
                 }
             }
 
-            ForEach(ReadingStatus.allCases) { status in
+            Section("Rating") {
                 Button {
-                    statusFilter = status
+                    ratingFilter = nil
                 } label: {
                     HStack {
-                        Label(status.displayName, systemImage: status.systemImage)
-                        if statusFilter == status {
+                        Text("All Ratings")
+                        if ratingFilter == nil {
                             Image(systemName: "checkmark")
+                        }
+                    }
+                }
+
+                ForEach(1...5, id: \.self) { stars in
+                    Button {
+                        ratingFilter = stars
+                    } label: {
+                        HStack {
+                            Text(String(repeating: "\u{2605}", count: stars))
+                            if ratingFilter == stars {
+                                Image(systemName: "checkmark")
+                            }
                         }
                     }
                 }
             }
         } label: {
-            Image(systemName: statusFilter == nil ? "line.3.horizontal.decrease.circle" : "line.3.horizontal.decrease.circle.fill")
+            Image(systemName: hasActiveFilter
+                  ? "line.3.horizontal.decrease.circle.fill"
+                  : "line.3.horizontal.decrease.circle")
         }
     }
 }

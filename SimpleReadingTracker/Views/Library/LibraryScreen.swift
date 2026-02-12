@@ -4,6 +4,7 @@ import SwiftData
 struct LibraryScreen: View {
     @Environment(\.modelContext) private var modelContext
     @State private var viewModel: LibraryViewModel?
+    var refreshTrigger: Int = 0
 
     var body: some View {
         Group {
@@ -22,6 +23,9 @@ struct LibraryScreen: View {
             }
         }
         .onAppear {
+            viewModel?.fetchBooks()
+        }
+        .onChange(of: refreshTrigger) { _, _ in
             viewModel?.fetchBooks()
         }
     }
@@ -90,6 +94,13 @@ struct LibraryScreen: View {
                         get: { vm.statusFilter },
                         set: {
                             vm.statusFilter = $0
+                            vm.fetchBooks()
+                        }
+                    ),
+                    ratingFilter: Binding(
+                        get: { vm.ratingFilter },
+                        set: {
+                            vm.ratingFilter = $0
                             vm.fetchBooks()
                         }
                     )

@@ -5,9 +5,9 @@ struct StatusBadge: View {
 
     var body: some View {
         Label(status.displayName, systemImage: status.systemImage)
-            .font(.caption)
-            .padding(.horizontal, 8)
-            .padding(.vertical, 4)
+            .font(.subheadline)
+            .padding(.horizontal, 12)
+            .padding(.vertical, 6)
             .background(backgroundColor.opacity(0.15))
             .foregroundStyle(backgroundColor)
             .clipShape(Capsule())

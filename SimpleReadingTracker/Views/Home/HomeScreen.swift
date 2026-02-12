@@ -4,6 +4,7 @@ import SwiftData
 struct HomeScreen: View {
     @Environment(\.modelContext) private var modelContext
     @State private var viewModel: HomeViewModel?
+    var refreshTrigger: Int = 0
 
     var body: some View {
         Group {
@@ -22,6 +23,9 @@ struct HomeScreen: View {
             }
         }
         .onAppear {
+            viewModel?.fetchBooks()
+        }
+        .onChange(of: refreshTrigger) { _, _ in
             viewModel?.fetchBooks()
         }
     }
