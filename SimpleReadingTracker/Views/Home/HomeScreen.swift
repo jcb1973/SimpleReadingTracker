@@ -16,7 +16,9 @@ struct HomeScreen: View {
         .navigationTitle("Reading Tracker")
         .task {
             if viewModel == nil {
-                viewModel = HomeViewModel(modelContext: modelContext)
+                let vm = HomeViewModel(modelContext: modelContext)
+                viewModel = vm
+                vm.fetchBooks()
             }
         }
         .onAppear {
