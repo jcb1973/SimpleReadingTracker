@@ -4,13 +4,13 @@ import SwiftUI
 struct BookInfoSection: View {
     let book: Book
     var onCoverImageSelected: ((Data) -> Void)?
+    var onStatusTapped: (() -> Void)?
 
     @State private var selectedPhoto: PhotosPickerItem?
 
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
             headerRow
-            metadataSection
             if !book.tags.isEmpty {
                 tagsRow
             }
@@ -30,7 +30,12 @@ struct BookInfoSection: View {
                 Text(book.authorNames)
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
-                StatusBadge(status: book.status)
+                Button {
+                    onStatusTapped?()
+                } label: {
+                    StatusBadge(status: book.status)
+                }
+                .buttonStyle(.plain)
                 if let rating = book.rating {
                     HStack(spacing: 2) {
                         ForEach(1...rating, id: \.self) { _ in
@@ -69,34 +74,6 @@ struct BookInfoSection: View {
             }
         }
         .buttonStyle(.plain)
-    }
-
-    private var metadataSection: some View {
-        VStack(alignment: .leading, spacing: 4) {
-            if let publisher = book.publisher {
-                metadataRow(label: "Publisher", value: publisher)
-            }
-            if let date = book.publishedDate {
-                metadataRow(label: "Published", value: date)
-            }
-            if let pages = book.pageCount {
-                metadataRow(label: "Pages", value: "\(pages)")
-            }
-            if let isbn = book.isbn {
-                metadataRow(label: "ISBN", value: isbn)
-            }
-        }
-    }
-
-    private func metadataRow(label: String, value: String) -> some View {
-        HStack {
-            Text(label)
-                .font(.caption)
-                .foregroundStyle(.secondary)
-                .frame(width: 80, alignment: .leading)
-            Text(value)
-                .font(.caption)
-        }
     }
 
     private var tagsRow: some View {

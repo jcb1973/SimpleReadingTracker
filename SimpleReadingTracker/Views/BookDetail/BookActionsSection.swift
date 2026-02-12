@@ -10,27 +10,8 @@ struct BookActionsSection: View {
             Text("Actions")
                 .font(.headline)
 
-            statusSection
             ratingSection
             buttonSection
-        }
-    }
-
-    private var statusSection: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            Text("Status")
-                .font(.subheadline)
-                .foregroundStyle(.secondary)
-            Picker("Status", selection: Binding(
-                get: { viewModel.book.status },
-                set: { viewModel.updateStatus($0) }
-            )) {
-                ForEach(ReadingStatus.allCases) { status in
-                    Label(status.displayName, systemImage: status.systemImage)
-                        .tag(status)
-                }
-            }
-            .pickerStyle(.segmented)
         }
     }
 

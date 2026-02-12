@@ -18,7 +18,6 @@ struct BookDetailScreen: View {
                 ProgressView()
             }
         }
-        .navigationTitle(book.title)
         .navigationBarTitleDisplayMode(.inline)
         .task {
             viewModel = BookDetailViewModel(book: book, modelContext: modelContext)
@@ -28,13 +27,19 @@ struct BookDetailScreen: View {
     private func detailContent(_ vm: BookDetailViewModel) -> some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 24) {
-                BookInfoSection(book: vm.book) { imageData in
-                    if let compressed = BookFormViewModel.compressImage(
-                        imageData, maxWidth: 600, quality: 0.7
-                    ) {
-                        vm.updateCoverImage(compressed)
+                BookInfoSection(
+                    book: vm.book,
+                    onCoverImageSelected: { imageData in
+                        if let compressed = BookFormViewModel.compressImage(
+                            imageData, maxWidth: 600, quality: 0.7
+                        ) {
+                            vm.updateCoverImage(compressed)
+                        }
+                    },
+                    onStatusTapped: {
+                        vm.cycleStatus()
                     }
-                }
+                )
                 BookNotesSection(viewModel: vm)
                 BookActionsSection(
                     viewModel: vm,

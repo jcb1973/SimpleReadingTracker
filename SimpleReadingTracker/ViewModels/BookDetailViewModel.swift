@@ -26,6 +26,15 @@ final class BookDetailViewModel {
         save()
     }
 
+    func cycleStatus() {
+        let next: ReadingStatus = switch book.status {
+        case .toRead: .reading
+        case .reading: .read
+        case .read: .toRead
+        }
+        updateStatus(next)
+    }
+
     func updateRating(_ rating: Int?) {
         book.rating = rating
         save()
