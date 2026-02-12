@@ -63,7 +63,10 @@ struct BookFormScreen: View {
                         vm.authorNames = result.authors
                     }
                     vm.isbn = result.isbn ?? ""
-                    if let url = result.coverImageURL { vm.coverImageURL = url }
+                    if let url = result.coverImageURL {
+                        vm.coverImageURL = url
+                        Task { await vm.downloadCoverImage(from: url) }
+                    }
                     if let pub = result.publisher { vm.publisher = pub }
                     if let date = result.publishedDate { vm.publishedDate = date }
                     if let desc = result.description { vm.bookDescription = desc }

@@ -88,7 +88,10 @@ final class BookFormViewModel {
             if !result.authors.isEmpty {
                 authorNames = result.authors
             }
-            if let url = result.coverImageURL { coverImageURL = url }
+            if let url = result.coverImageURL {
+                coverImageURL = url
+                await downloadCoverImage(from: url)
+            }
             if let pub = result.publisher { publisher = pub }
             if let date = result.publishedDate { publishedDate = date }
             if let desc = result.description { bookDescription = desc }
@@ -97,6 +100,19 @@ final class BookFormViewModel {
             lookupError = error.localizedDescription
         }
         isLookingUp = false
+    }
+
+    func downloadCoverImage(from urlString: String) async {
+        guard selectedImageData == nil,
+              let url = URL(string: urlString) else { return }
+        do {
+            let (data, _) = try await URLSession.shared.data(from: url)
+            if let compressed = Self.compressImage(data, maxWidth: 600, quality: 0.7) {
+                selectedImageData = compressed
+            }
+        } catch {
+            // Cover download failed — user can still add one manually
+        }
     }
 
     func save() {
