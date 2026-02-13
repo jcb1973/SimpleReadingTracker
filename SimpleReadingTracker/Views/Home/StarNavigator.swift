@@ -6,7 +6,7 @@ struct StarNavigator: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
-            Text("Filter by star rating")
+            Text("Filter by rating")
                 .font(.subheadline)
 
             HStack(spacing: 6) {

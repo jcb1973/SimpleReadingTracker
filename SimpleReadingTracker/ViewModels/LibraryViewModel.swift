@@ -304,6 +304,54 @@ final class LibraryViewModel {
         }
     }
 
+    // MARK: - CSV Export
+
+    func exportCSV() -> URL? {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateStyle = .short
+
+        let fileDateFormatter = DateFormatter()
+        fileDateFormatter.dateFormat = "yyyy-MM-dd"
+
+        var csv = "Title,Authors,Status,Rating,Tags,Pages,Publisher,Published Date,Date Added,Date Started,Date Finished,ISBN,Notes\n"
+
+        for book in books {
+            let fields: [String] = [
+                csvEscape(book.title),
+                csvEscape(book.authorNames),
+                csvEscape(book.status.displayName),
+                book.rating.map(String.init) ?? "",
+                csvEscape(book.tags.map(\.displayName).joined(separator: "; ")),
+                book.pageCount.map(String.init) ?? "",
+                csvEscape(book.publisher ?? ""),
+                csvEscape(book.publishedDate ?? ""),
+                dateFormatter.string(from: book.dateAdded),
+                book.dateStarted.map { dateFormatter.string(from: $0) } ?? "",
+                book.dateFinished.map { dateFormatter.string(from: $0) } ?? "",
+                csvEscape(book.isbn ?? ""),
+                csvEscape(book.userNotes ?? "")
+            ]
+            csv += fields.joined(separator: ",") + "\n"
+        }
+
+        let fileName = "books-export-\(fileDateFormatter.string(from: .now)).csv"
+        let url = FileManager.default.temporaryDirectory.appendingPathComponent(fileName)
+        do {
+            try csv.write(to: url, atomically: true, encoding: .utf8)
+            return url
+        } catch {
+            self.error = "Failed to create CSV file."
+            return nil
+        }
+    }
+
+    private func csvEscape(_ value: String) -> String {
+        if value.contains(",") || value.contains("\"") || value.contains("\n") {
+            return "\"" + value.replacingOccurrences(of: "\"", with: "\"\"") + "\""
+        }
+        return value
+    }
+
     private func sortCompare(_ a: Book, _ b: Book) -> Bool {
         switch sortOption {
         case .title:

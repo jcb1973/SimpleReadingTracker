@@ -91,7 +91,12 @@ struct ContentView: View {
 
     private func tabButton(label: String, systemImage: String, tag: Int) -> some View {
         Button {
-            selectedTab = tag
+            if selectedTab == tag {
+                if tag == 0 { homePath = NavigationPath() }
+                if tag == 1 { libraryPath = NavigationPath() }
+            } else {
+                selectedTab = tag
+            }
         } label: {
             VStack(spacing: 4) {
                 Image(systemName: systemImage)

@@ -5,6 +5,8 @@ struct LibraryScreen: View {
     @Environment(\.modelContext) private var modelContext
     @State private var viewModel: LibraryViewModel?
     @State private var showingManageTags = false
+    @State private var showingExportSheet = false
+    @State private var exportFileURL: URL?
     var refreshTrigger: Int = 0
     var statusFilterOverride: Binding<ReadingStatus?> = .constant(nil)
     var ratingFilterOverride: Binding<Int?> = .constant(nil)
@@ -147,6 +149,10 @@ struct LibraryScreen: View {
         }) {
             ManageTagsScreen()
         }
+        .shareSheet(
+            isPresented: $showingExportSheet,
+            activityItems: exportFileURL.map { [$0] } ?? []
+        )
         .navigationDestination(for: Book.self) { book in
             BookDetailScreen(book: book)
         }
@@ -214,7 +220,13 @@ struct LibraryScreen: View {
                             vm.ratingFilter = $0
                             vm.fetchBooks()
                         }
-                    )
+                    ),
+                    onExport: {
+                        if let url = vm.exportCSV() {
+                            exportFileURL = url
+                            showingExportSheet = true
+                        }
+                    }
                 )
             }
         }

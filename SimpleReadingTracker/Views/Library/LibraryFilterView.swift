@@ -3,6 +3,7 @@ import SwiftUI
 struct LibraryFilterView: View {
     @Binding var statusFilter: ReadingStatus?
     @Binding var ratingFilter: Int?
+    var onExport: (() -> Void)?
 
     private var hasActiveFilter: Bool {
         statusFilter != nil || ratingFilter != nil
@@ -11,20 +12,9 @@ struct LibraryFilterView: View {
     var body: some View {
         Menu {
             Section("Status") {
-                Button {
-                    statusFilter = nil
-                } label: {
-                    HStack {
-                        Text("All Statuses")
-                        if statusFilter == nil {
-                            Image(systemName: "checkmark")
-                        }
-                    }
-                }
-
                 ForEach(ReadingStatus.allCases) { status in
                     Button {
-                        statusFilter = status
+                        statusFilter = statusFilter == status ? nil : status
                     } label: {
                         HStack {
                             Text(status.displayName)
@@ -37,20 +27,9 @@ struct LibraryFilterView: View {
             }
 
             Section("Rating") {
-                Button {
-                    ratingFilter = nil
-                } label: {
-                    HStack {
-                        Text("All Ratings")
-                        if ratingFilter == nil {
-                            Image(systemName: "checkmark")
-                        }
-                    }
-                }
-
                 ForEach(1...5, id: \.self) { stars in
                     Button {
-                        ratingFilter = stars
+                        ratingFilter = ratingFilter == stars ? nil : stars
                     } label: {
                         HStack {
                             Text(String(repeating: "\u{2605}", count: stars))
@@ -59,6 +38,14 @@ struct LibraryFilterView: View {
                             }
                         }
                     }
+                }
+            }
+
+            Section {
+                Button {
+                    onExport?()
+                } label: {
+                    Label("Export (CSV)", systemImage: "square.and.arrow.up")
                 }
             }
         } label: {
