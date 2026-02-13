@@ -29,7 +29,6 @@ struct LibraryTagBar: View {
                 HStack {
                     Text("Filter by tags")
                         .font(.subheadline)
-                        .foregroundStyle(.secondary)
 
                     Spacer()
 

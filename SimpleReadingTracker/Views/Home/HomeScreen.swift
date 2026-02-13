@@ -10,7 +10,7 @@ struct HomeScreen: View {
 
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: 24) {
+            VStack(alignment: .leading, spacing: 20) {
                 if let vm = viewModel {
                     if !vm.currentlyReading.isEmpty {
                         CurrentlyReadingSection(books: vm.currentlyReading)
