@@ -5,40 +5,40 @@ struct StarNavigator: View {
     let onRatingTapped: (Int) -> Void
 
     var body: some View {
-        HStack(spacing: 8) {
+        HStack(spacing: 6) {
             ForEach(1...5, id: \.self) { star in
                 let count = ratingCounts[star] ?? 0
+                let isActive = count > 0
                 Button {
                     onRatingTapped(star)
                 } label: {
-                    VStack(spacing: 2) {
-                        HStack(spacing: 4) {
-                            Image(systemName: "star.fill")
-                                .font(.system(size: 16))
-                                .foregroundStyle(count > 0 ? .yellow : .gray.opacity(0.3))
+                    HStack(spacing: 3) {
+                        Image(systemName: "star.fill")
+                            .font(.system(size: 14))
+                            .foregroundStyle(isActive ? .yellow : .gray.opacity(0.3))
 
-                            Text("\(star)")
-                                .font(.subheadline)
-                                .fontWeight(.bold)
-                        }
-
-                        Text("\(count)")
-                            .font(.caption2)
-                            .foregroundStyle(.secondary)
-                            .monospacedDigit()
+                        Text("\(star)")
+                            .font(.subheadline)
+                            .fontWeight(.bold)
                     }
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, 10)
+                    .frame(width: 54, height: 54)
                     .background(
-                        count > 0
+                        isActive
                             ? Color.yellow.opacity(0.15)
                             : Color(red: 0.953, green: 0.957, blue: 0.965)
                     )
-                    .clipShape(Capsule())
-                    .contentShape(Capsule())
+                    .clipShape(Circle())
+                    .overlay {
+                        if isActive {
+                            Circle()
+                                .strokeBorder(Color(red: 0.918, green: 0.702, blue: 0.031), lineWidth: 1)
+                        }
+                    }
+                    .contentShape(Circle())
                 }
                 .buttonStyle(.plain)
             }
         }
+        .frame(maxWidth: .infinity)
     }
 }
