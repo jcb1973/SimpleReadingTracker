@@ -57,6 +57,11 @@ struct LibraryScreen: View {
                             matchReasons: vm.matchReasons(for: book)
                         )
                     }
+                    .onAppear {
+                        if book.persistentModelID == vm.books.last?.persistentModelID {
+                            vm.loadMore()
+                        }
+                    }
                     .swipeActions(edge: .trailing) {
                         Button(role: .destructive) {
                             vm.deleteBook(book)
@@ -74,7 +79,7 @@ struct LibraryScreen: View {
             get: { vm.searchText },
             set: {
                 vm.searchText = $0
-                vm.fetchBooks()
+                vm.searchTextDidChange()
             }
         ), prompt: "Search books, authors, tags...")
         .toolbar {
