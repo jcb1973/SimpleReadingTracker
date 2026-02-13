@@ -48,7 +48,7 @@ final class BookFormViewModel {
     init(
         mode: BookFormMode,
         modelContext: ModelContext,
-        lookupService: any BookLookupService = RemoteBookLookupService()
+        lookupService: any BookLookupService = CachingBookLookupService()
     ) {
         self.mode = mode
         self.modelContext = modelContext

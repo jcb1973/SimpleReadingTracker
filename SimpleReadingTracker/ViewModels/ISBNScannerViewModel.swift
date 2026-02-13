@@ -13,7 +13,7 @@ final class ISBNScannerViewModel {
 
     var cameraPermissionGranted = false
 
-    init(lookupService: any BookLookupService = RemoteBookLookupService()) {
+    init(lookupService: any BookLookupService = CachingBookLookupService()) {
         self.lookupService = lookupService
     }
 

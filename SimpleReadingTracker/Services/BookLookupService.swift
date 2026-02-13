@@ -1,6 +1,6 @@
 import Foundation
 
-struct BookLookupResult: Sendable {
+nonisolated struct BookLookupResult: Sendable, Codable {
     let title: String
     let authors: [String]
     let isbn: String?
@@ -96,11 +96,16 @@ struct RemoteBookLookupService: BookLookupService {
     }
 
     private func performRequest(url: URL) async throws -> (Data, URLResponse) {
+        let result: (Data, URLResponse)
         do {
-            return try await session.data(from: url)
+            result = try await session.data(from: url)
         } catch {
             throw BookLookupError.networkError(underlying: error)
         }
+        if let httpResponse = result.1 as? HTTPURLResponse, httpResponse.statusCode == 429 {
+            throw BookLookupError.rateLimited
+        }
+        return result
     }
 }
 

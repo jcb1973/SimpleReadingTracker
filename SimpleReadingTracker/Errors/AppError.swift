@@ -5,6 +5,7 @@ enum BookLookupError: Error, LocalizedError {
     case networkError(underlying: Error)
     case notFound
     case decodingError(underlying: Error)
+    case rateLimited
 
     var errorDescription: String? {
         switch self {
@@ -16,6 +17,8 @@ enum BookLookupError: Error, LocalizedError {
             "No book found for this ISBN."
         case .decodingError(let underlying):
             "Failed to parse book data: \(underlying.localizedDescription)"
+        case .rateLimited:
+            "Too many requests. Please try again in a moment."
         }
     }
 }
