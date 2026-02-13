@@ -7,6 +7,8 @@ struct LibraryScreen: View {
     @State private var showingManageTags = false
     var refreshTrigger: Int = 0
     var statusFilterOverride: Binding<ReadingStatus?> = .constant(nil)
+    var ratingFilterOverride: Binding<Int?> = .constant(nil)
+    var clearFilters: Binding<Bool> = .constant(false)
 
     var body: some View {
         List {
@@ -100,13 +102,13 @@ struct LibraryScreen: View {
             if viewModel == nil {
                 let vm = LibraryViewModel(modelContext: modelContext)
                 viewModel = vm
-                applyStatusOverride(vm)
+                applyOverrides(vm)
                 vm.fetchBooks()
             }
         }
         .onAppear {
             if let vm = viewModel {
-                applyStatusOverride(vm)
+                applyOverrides(vm)
             }
             viewModel?.fetchBooks()
         }
@@ -115,9 +117,30 @@ struct LibraryScreen: View {
         }
         .onChange(of: statusFilterOverride.wrappedValue) { _, newValue in
             guard let status = newValue, let vm = viewModel else { return }
+            vm.ratingFilter = nil
+            vm.tagFilters = []
+            vm.searchText = ""
             vm.statusFilter = status
             vm.fetchBooks()
             statusFilterOverride.wrappedValue = nil
+        }
+        .onChange(of: ratingFilterOverride.wrappedValue) { _, newValue in
+            guard let rating = newValue, let vm = viewModel else { return }
+            vm.statusFilter = nil
+            vm.tagFilters = []
+            vm.searchText = ""
+            vm.ratingFilter = rating
+            vm.fetchBooks()
+            ratingFilterOverride.wrappedValue = nil
+        }
+        .onChange(of: clearFilters.wrappedValue) { _, shouldClear in
+            guard shouldClear, let vm = viewModel else { return }
+            vm.statusFilter = nil
+            vm.ratingFilter = nil
+            vm.tagFilters = []
+            vm.searchText = ""
+            vm.fetchBooks()
+            clearFilters.wrappedValue = false
         }
         .sheet(isPresented: $showingManageTags, onDismiss: {
             viewModel?.fetchBooks()
@@ -131,10 +154,24 @@ struct LibraryScreen: View {
 
     // MARK: - Helpers
 
-    private func applyStatusOverride(_ vm: LibraryViewModel) {
-        guard let status = statusFilterOverride.wrappedValue else { return }
-        vm.statusFilter = status
-        statusFilterOverride.wrappedValue = nil
+    private func applyOverrides(_ vm: LibraryViewModel) {
+        let hasOverride = statusFilterOverride.wrappedValue != nil
+            || ratingFilterOverride.wrappedValue != nil
+        guard hasOverride else { return }
+
+        vm.statusFilter = nil
+        vm.ratingFilter = nil
+        vm.tagFilters = []
+        vm.searchText = ""
+
+        if let status = statusFilterOverride.wrappedValue {
+            vm.statusFilter = status
+            statusFilterOverride.wrappedValue = nil
+        }
+        if let rating = ratingFilterOverride.wrappedValue {
+            vm.ratingFilter = rating
+            ratingFilterOverride.wrappedValue = nil
+        }
     }
 
     // MARK: - Toolbar

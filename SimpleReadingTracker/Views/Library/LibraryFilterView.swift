@@ -27,7 +27,7 @@ struct LibraryFilterView: View {
                         statusFilter = status
                     } label: {
                         HStack {
-                            Label(status.displayName, systemImage: status.systemImage)
+                            Text(status.displayName)
                             if statusFilter == status {
                                 Image(systemName: "checkmark")
                             }

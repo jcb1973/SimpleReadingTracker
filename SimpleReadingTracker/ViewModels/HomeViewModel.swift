@@ -7,8 +7,8 @@ final class HomeViewModel {
     private let modelContext: ModelContext
 
     private(set) var currentlyReading: [Book] = []
-    private(set) var recentlyRead: [Book] = []
     private(set) var statusCounts: [ReadingStatus: Int] = [:]
+    private(set) var ratingCounts: [Int: Int] = [:]
     private(set) var error: String?
 
     init(modelContext: ModelContext) {
@@ -24,14 +24,6 @@ final class HomeViewModel {
             )
             currentlyReading = try modelContext.fetch(readingDescriptor)
 
-            let readStatus = ReadingStatus.read.rawValue
-            var recentDescriptor = FetchDescriptor<Book>(
-                predicate: #Predicate { $0.statusRawValue == readStatus },
-                sortBy: [SortDescriptor(\.dateFinished, order: .reverse)]
-            )
-            recentDescriptor.fetchLimit = 3
-            recentlyRead = try modelContext.fetch(recentDescriptor)
-
             var counts: [ReadingStatus: Int] = [:]
             for status in ReadingStatus.allCases {
                 let raw = status.rawValue
@@ -41,6 +33,15 @@ final class HomeViewModel {
                 counts[status] = (try? modelContext.fetchCount(desc)) ?? 0
             }
             statusCounts = counts
+
+            var ratings: [Int: Int] = [:]
+            for star in 1...5 {
+                let desc = FetchDescriptor<Book>(
+                    predicate: #Predicate { $0.rating == star }
+                )
+                ratings[star] = (try? modelContext.fetchCount(desc)) ?? 0
+            }
+            ratingCounts = ratings
 
             error = nil
         } catch {

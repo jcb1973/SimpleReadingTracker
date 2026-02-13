@@ -7,6 +7,8 @@ struct ContentView: View {
     @State private var libraryPath = NavigationPath()
     @State private var refreshTrigger = 0
     @State private var libraryStatusFilter: ReadingStatus?
+    @State private var libraryRatingFilter: Int?
+    @State private var libraryClearFilters = false
 
     var body: some View {
         TabView(selection: $selectedTab) {
@@ -15,6 +17,10 @@ struct ContentView: View {
                     refreshTrigger: refreshTrigger,
                     onStatusTapped: { status in
                         libraryStatusFilter = status
+                        selectedTab = 1
+                    },
+                    onRatingTapped: { rating in
+                        libraryRatingFilter = rating
                         selectedTab = 1
                     }
                 )
@@ -28,7 +34,9 @@ struct ContentView: View {
             NavigationStack(path: $libraryPath) {
                 LibraryScreen(
                     refreshTrigger: refreshTrigger,
-                    statusFilterOverride: $libraryStatusFilter
+                    statusFilterOverride: $libraryStatusFilter,
+                    ratingFilterOverride: $libraryRatingFilter,
+                    clearFilters: $libraryClearFilters
                 )
                     .addBookOverlay(showingAddBook: $showingAddBook)
             }
@@ -37,9 +45,14 @@ struct ContentView: View {
             }
             .tag(1)
         }
-        .onChange(of: selectedTab) { _, _ in
+        .onChange(of: selectedTab) { _, newTab in
             homePath = NavigationPath()
             libraryPath = NavigationPath()
+            if newTab == 1,
+               libraryStatusFilter == nil,
+               libraryRatingFilter == nil {
+                libraryClearFilters = true
+            }
         }
         .sheet(isPresented: $showingAddBook, onDismiss: { refreshTrigger += 1 }) {
             NavigationStack {

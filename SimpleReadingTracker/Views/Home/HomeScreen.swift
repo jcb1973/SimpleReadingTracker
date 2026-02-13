@@ -6,6 +6,7 @@ struct HomeScreen: View {
     @State private var viewModel: HomeViewModel?
     var refreshTrigger: Int = 0
     var onStatusTapped: ((ReadingStatus) -> Void)?
+    var onRatingTapped: ((Int) -> Void)?
 
     var body: some View {
         ScrollView {
@@ -19,11 +20,11 @@ struct HomeScreen: View {
                         onStatusTapped?(status)
                     }
 
-                    if !vm.recentlyRead.isEmpty {
-                        RecentlyReadSection(books: vm.recentlyRead)
+                    StarNavigator(ratingCounts: vm.ratingCounts) { rating in
+                        onRatingTapped?(rating)
                     }
 
-                    if vm.currentlyReading.isEmpty && vm.recentlyRead.isEmpty {
+                    if vm.currentlyReading.isEmpty {
                         EmptyStateView(
                             systemImage: "book.closed",
                             title: "No Books Yet",
