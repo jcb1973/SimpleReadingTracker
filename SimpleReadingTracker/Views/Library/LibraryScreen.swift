@@ -94,7 +94,7 @@ struct LibraryScreen: View {
                 viewModel?.searchText = $0
                 viewModel?.searchTextDidChange()
             }
-        ), prompt: "Search books, authors, tags...")
+        ), placement: .navigationBarDrawer(displayMode: .always), prompt: "Search books, authors, tags...")
         .toolbar {
             navigationToolbarItems
         }

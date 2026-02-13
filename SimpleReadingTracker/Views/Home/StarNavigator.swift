@@ -40,5 +40,6 @@ struct StarNavigator: View {
             }
         }
         .frame(maxWidth: .infinity)
+        .padding(.vertical, 4)
     }
 }
