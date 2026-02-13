@@ -14,15 +14,19 @@ struct LibraryScreen: View {
                 ProgressView()
             }
         }
-        .background {
-            LinearGradient(
-                colors: [Color(.systemBackground), Color.blue.opacity(0.05)],
-                startPoint: .top,
-                endPoint: .bottom
-            )
-            .ignoresSafeArea()
-        }
+        .background(Color(.systemGroupedBackground).ignoresSafeArea())
         .navigationTitle("Library")
+        // FIX: Moved here so the search bar is registered on first load
+        .searchable(text: Binding(
+            get: { viewModel?.searchText ?? "" },
+            set: {
+                viewModel?.searchText = $0
+                viewModel?.searchTextDidChange()
+            }
+        ), prompt: "Search books, authors, notes...")
+        .toolbar {
+            navigationToolbarItems
+        }
         .task {
             if viewModel == nil {
                 let vm = LibraryViewModel(modelContext: modelContext)
@@ -36,7 +40,12 @@ struct LibraryScreen: View {
         .onChange(of: refreshTrigger) { _, _ in
             viewModel?.fetchBooks()
         }
+        .navigationDestination(for: Book.self) { book in
+            BookDetailScreen(book: book)
+        }
     }
+
+    // MARK: - Subviews
 
     private func libraryContent(_ vm: LibraryViewModel) -> some View {
         VStack(spacing: 0) {
@@ -94,15 +103,13 @@ struct LibraryScreen: View {
                 }
             }
         }
-        .searchable(text: Binding(
-            get: { vm.searchText },
-            set: {
-                vm.searchText = $0
-                vm.searchTextDidChange()
-            }
-        ), prompt: "Search books, authors, tags...")
-        .toolbar {
-            ToolbarItem(placement: .topBarTrailing) {
+        // MODIFIERS REMOVED FROM HERE TO PREVENT DISAPPEARING ON LOAD
+    }
+
+    @ToolbarContentBuilder
+    private var navigationToolbarItems: some ToolbarContent {
+        ToolbarItem(placement: .topBarTrailing) {
+            if let vm = viewModel {
                 LibrarySortMenu(
                     sortOption: Binding(
                         get: { vm.sortOption },
@@ -120,7 +127,9 @@ struct LibraryScreen: View {
                     )
                 )
             }
-            ToolbarItem(placement: .topBarTrailing) {
+        }
+        ToolbarItem(placement: .topBarTrailing) {
+            if let vm = viewModel {
                 LibraryFilterView(
                     statusFilter: Binding(
                         get: { vm.statusFilter },
@@ -138,9 +147,6 @@ struct LibraryScreen: View {
                     )
                 )
             }
-        }
-        .navigationDestination(for: Book.self) { book in
-            BookDetailScreen(book: book)
         }
     }
 

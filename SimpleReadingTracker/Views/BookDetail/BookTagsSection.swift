@@ -1,3 +1,4 @@
+import SwiftData
 import SwiftUI
 
 struct BookTagsSection: View {
@@ -5,7 +6,23 @@ struct BookTagsSection: View {
     let onAdd: (String) -> Void
     let onRemove: (Tag) -> Void
 
+    @Query(sort: \Tag.name) private var allTags: [Tag]
     @State private var newTagName = ""
+    @State private var isExpanded = false
+
+    private var filteredTags: [Tag] {
+        let bookTagIDs = Set(book.tags.map(\.persistentModelID))
+        return allTags
+            .filter { !bookTagIDs.contains($0.persistentModelID) }
+            .sorted { $0.books.count > $1.books.count }
+    }
+
+    private var suggestedTags: [Tag] {
+        if isExpanded {
+            return filteredTags
+        }
+        return Array(filteredTags.prefix(5))
+    }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
@@ -13,13 +30,17 @@ struct BookTagsSection: View {
                 .font(.headline)
 
             if !book.tags.isEmpty {
-                FlowLayout(spacing: 6) {
+                FlowLayout(spacing: 8) {
                     ForEach(book.tags) { tag in
                         RemovableTagChip(name: tag.displayName) {
                             onRemove(tag)
                         }
                     }
                 }
+            }
+
+            if !filteredTags.isEmpty {
+                suggestionsSection
             }
 
             HStack(spacing: 8) {
@@ -32,6 +53,39 @@ struct BookTagsSection: View {
                         .font(.title3)
                 }
                 .disabled(newTagName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+            }
+        }
+    }
+
+    private var suggestionsSection: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            HStack {
+                Text(isExpanded ? "All Library Tags" : "Suggestions")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+
+                Spacer()
+
+                if filteredTags.count > 5 {
+                    Button {
+                        withAnimation(.easeInOut(duration: 0.2)) {
+                            isExpanded.toggle()
+                        }
+                    } label: {
+                        Text(isExpanded ? "Show Less" : "Show More")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
+                    .buttonStyle(.plain)
+                }
+            }
+
+            FlowLayout(spacing: 8) {
+                ForEach(suggestedTags) { tag in
+                    SuggestedTagChip(name: tag.displayName) {
+                        onAdd(tag.displayName)
+                    }
+                }
             }
         }
     }
@@ -59,11 +113,38 @@ private struct RemovableTagChip: View {
             }
             .buttonStyle(.plain)
         }
-        .font(.caption)
-        .padding(.horizontal, 8)
-        .padding(.vertical, 4)
+        .font(.subheadline)
+        .padding(.horizontal, 12)
+        .padding(.vertical, 6)
         .background(.tint.opacity(0.15))
         .foregroundStyle(.tint)
         .clipShape(Capsule())
+    }
+}
+
+private struct SuggestedTagChip: View {
+    let name: String
+    let onTap: () -> Void
+
+    var body: some View {
+        Button(action: onTap) {
+            HStack(spacing: 4) {
+                Text(name)
+                Image(systemName: "plus")
+                    .font(.caption2)
+            }
+            .font(.subheadline)
+            .padding(.horizontal, 12)
+            .padding(.vertical, 6)
+            .background(Color(.systemGray6))
+            .foregroundStyle(.primary)
+            .clipShape(Capsule())
+            .overlay {
+                Capsule()
+                    .strokeBorder(style: StrokeStyle(lineWidth: 1, dash: [4, 3]))
+                    .foregroundStyle(Color(.systemGray3))
+            }
+        }
+        .buttonStyle(.plain)
     }
 }
