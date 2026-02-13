@@ -7,23 +7,72 @@ struct LibraryScreen: View {
     var refreshTrigger: Int = 0
 
     var body: some View {
-        Group {
-            if let viewModel {
-                libraryContent(viewModel)
-            } else {
-                ProgressView()
+        VStack(spacing: 0) {
+            if let vm = viewModel, !vm.allTags.isEmpty {
+                LibraryTagBar(
+                    tags: vm.allTags,
+                    selectedTagIDs: Set(vm.tagFilters.map(\.persistentModelID)),
+                    onToggle: { vm.toggleTag($0) }
+                )
+                .padding(.horizontal)
+                .padding(.bottom, 8)
+            }
+
+            List {
+                if let vm = viewModel {
+                    if vm.books.isEmpty {
+                        EmptyStateView(
+                            systemImage: "magnifyingglass",
+                            title: "No Books Found",
+                            message: vm.hasActiveFilters
+                                ? "No books match your current filters. Try adjusting or clearing them."
+                                : "Your library is empty. Add a book to get started."
+                        )
+                        .listRowSeparator(.hidden)
+                    } else {
+                        ForEach(vm.books) { book in
+                            NavigationLink(value: book) {
+                                LibraryBookRow(
+                                    book: book,
+                                    matchReasons: vm.matchReasons(for: book)
+                                )
+                            }
+                            .onAppear {
+                                if book.persistentModelID == vm.books.last?.persistentModelID {
+                                    vm.loadMore()
+                                }
+                            }
+                            .swipeActions(edge: .trailing) {
+                                Button(role: .destructive) {
+                                    vm.deleteBook(book)
+                                } label: {
+                                    Label("Delete", systemImage: "trash")
+                                }
+                            }
+                            .swipeActions(edge: .leading) {
+                                statusSwipeActions(for: book, vm: vm)
+                            }
+                        }
+                    }
+                }
             }
         }
-        .background(Color(.systemGroupedBackground).ignoresSafeArea())
+        .background {
+            LinearGradient(
+                colors: [Color(.systemBackground), Color.blue.opacity(0.05)],
+                startPoint: .top,
+                endPoint: .bottom
+            )
+            .ignoresSafeArea()
+        }
         .navigationTitle("Library")
-        // FIX: Moved here so the search bar is registered on first load
         .searchable(text: Binding(
             get: { viewModel?.searchText ?? "" },
             set: {
                 viewModel?.searchText = $0
                 viewModel?.searchTextDidChange()
             }
-        ), prompt: "Search books, authors, notes...")
+        ), prompt: "Search books, authors, tags...")
         .toolbar {
             navigationToolbarItems
         }
@@ -45,66 +94,7 @@ struct LibraryScreen: View {
         }
     }
 
-    // MARK: - Subviews
-
-    private func libraryContent(_ vm: LibraryViewModel) -> some View {
-        VStack(spacing: 0) {
-            if !vm.allTags.isEmpty {
-                LibraryTagBar(
-                    tags: vm.allTags,
-                    selectedTag: vm.tagFilter,
-                    onSelect: {
-                        vm.tagFilter = $0
-                        vm.fetchBooks()
-                    }
-                )
-                .padding(.horizontal)
-                .padding(.bottom, 8)
-            }
-
-            bookList(vm)
-        }
-    }
-
-    private func bookList(_ vm: LibraryViewModel) -> some View {
-        List {
-            if vm.books.isEmpty {
-                EmptyStateView(
-                    systemImage: "magnifyingglass",
-                    title: "No Books Found",
-                    message: vm.hasActiveFilters
-                        ? "No books match your current filters. Try adjusting or clearing them."
-                        : "Your library is empty. Add a book to get started."
-                )
-                .listRowSeparator(.hidden)
-            } else {
-                ForEach(vm.books) { book in
-                    NavigationLink(value: book) {
-                        LibraryBookRow(
-                            book: book,
-                            matchReasons: vm.matchReasons(for: book)
-                        )
-                    }
-                    .onAppear {
-                        if book.persistentModelID == vm.books.last?.persistentModelID {
-                            vm.loadMore()
-                        }
-                    }
-                    .swipeActions(edge: .trailing) {
-                        Button(role: .destructive) {
-                            vm.deleteBook(book)
-                        } label: {
-                            Label("Delete", systemImage: "trash")
-                        }
-                    }
-                    .swipeActions(edge: .leading) {
-                        statusSwipeActions(for: book, vm: vm)
-                    }
-                }
-            }
-        }
-        // MODIFIERS REMOVED FROM HERE TO PREVENT DISAPPEARING ON LOAD
-    }
+    // MARK: - Toolbar
 
     @ToolbarContentBuilder
     private var navigationToolbarItems: some ToolbarContent {
@@ -149,6 +139,8 @@ struct LibraryScreen: View {
             }
         }
     }
+
+    // MARK: - Swipe Actions
 
     @ViewBuilder
     private func statusSwipeActions(for book: Book, vm: LibraryViewModel) -> some View {

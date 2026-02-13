@@ -7,12 +7,29 @@ struct HomeScreen: View {
     var refreshTrigger: Int = 0
 
     var body: some View {
-        Group {
-            if let viewModel {
-                homeContent(viewModel)
-            } else {
-                ProgressView()
+        ScrollView {
+            VStack(alignment: .leading, spacing: 24) {
+                if let vm = viewModel {
+                    if !vm.currentlyReading.isEmpty {
+                        CurrentlyReadingSection(books: vm.currentlyReading)
+                    }
+
+                    if !vm.recentlyRead.isEmpty {
+                        RecentlyReadSection(books: vm.recentlyRead)
+                    }
+
+                    if vm.currentlyReading.isEmpty && vm.recentlyRead.isEmpty {
+                        EmptyStateView(
+                            systemImage: "book.closed",
+                            title: "No Books Yet",
+                            message: "Add your first book to start tracking your reading."
+                        )
+                        .frame(maxWidth: .infinity)
+                        .padding(.top, 60)
+                    }
+                }
             }
+            .padding()
         }
         .background {
             LinearGradient(
@@ -23,6 +40,12 @@ struct HomeScreen: View {
             .ignoresSafeArea()
         }
         .navigationTitle("Reading Tracker")
+        .navigationDestination(for: Book.self) { book in
+            BookDetailScreen(book: book)
+        }
+        .refreshable {
+            viewModel?.fetchBooks()
+        }
         .task {
             if viewModel == nil {
                 let vm = HomeViewModel(modelContext: modelContext)
@@ -35,38 +58,6 @@ struct HomeScreen: View {
         }
         .onChange(of: refreshTrigger) { _, _ in
             viewModel?.fetchBooks()
-        }
-    }
-
-    @ViewBuilder
-    private func homeContent(_ vm: HomeViewModel) -> some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: 24) {
-                if !vm.currentlyReading.isEmpty {
-                    CurrentlyReadingSection(books: vm.currentlyReading)
-                }
-
-                if !vm.recentlyRead.isEmpty {
-                    RecentlyReadSection(books: vm.recentlyRead)
-                }
-
-                if vm.currentlyReading.isEmpty && vm.recentlyRead.isEmpty {
-                    EmptyStateView(
-                        systemImage: "book.closed",
-                        title: "No Books Yet",
-                        message: "Add your first book to start tracking your reading."
-                    )
-                    .frame(maxWidth: .infinity)
-                    .padding(.top, 60)
-                }
-            }
-            .padding()
-        }
-        .navigationDestination(for: Book.self) { book in
-            BookDetailScreen(book: book)
-        }
-        .refreshable {
-            vm.fetchBooks()
         }
     }
 }

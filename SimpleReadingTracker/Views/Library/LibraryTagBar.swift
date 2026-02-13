@@ -3,8 +3,8 @@ import SwiftUI
 
 struct LibraryTagBar: View {
     let tags: [Tag]
-    let selectedTag: Tag?
-    let onSelect: (Tag?) -> Void
+    let selectedTagIDs: Set<PersistentIdentifier>
+    let onToggle: (Tag) -> Void
 
     private let collapsedLimit = 10
     @State private var isExpanded = false
@@ -29,13 +29,9 @@ struct LibraryTagBar: View {
                         TagFilterChip(
                             name: tag.displayName,
                             count: tag.books.count,
-                            isSelected: selectedTag?.persistentModelID == tag.persistentModelID
+                            isSelected: selectedTagIDs.contains(tag.persistentModelID)
                         ) {
-                            if selectedTag?.persistentModelID == tag.persistentModelID {
-                                onSelect(nil)
-                            } else {
-                                onSelect(tag)
-                            }
+                            onToggle(tag)
                         }
                     }
                 }

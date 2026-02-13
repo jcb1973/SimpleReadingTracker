@@ -13,7 +13,7 @@ final class LibraryViewModel {
     var searchText = ""
     var statusFilter: ReadingStatus?
     var ratingFilter: Int?
-    var tagFilter: Tag?
+    var tagFilters: [Tag] = []
     var sortOption: SortOption = .dateAdded
     var sortAscending = false
 
@@ -30,7 +30,7 @@ final class LibraryViewModel {
         !searchText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
             || statusFilter != nil
             || ratingFilter != nil
-            || tagFilter != nil
+            || !tagFilters.isEmpty
     }
 
     init(modelContext: ModelContext) {
@@ -46,7 +46,7 @@ final class LibraryViewModel {
         fetchTags()
 
         let trimmed = searchText.trimmingCharacters(in: .whitespacesAndNewlines)
-        if trimmed.isEmpty, tagFilter == nil {
+        if trimmed.isEmpty, tagFilters.isEmpty {
             loadNextPage()
         } else if trimmed.isEmpty {
             loadTagFiltered()
@@ -73,7 +73,7 @@ final class LibraryViewModel {
         if trimmed.isEmpty {
             searchResults = []
             hasMore = true
-            if tagFilter == nil {
+            if tagFilters.isEmpty {
                 loadNextPage()
             } else {
                 loadTagFiltered()
@@ -87,6 +87,15 @@ final class LibraryViewModel {
             hasMore = true
             performSearch()
         }
+    }
+
+    func toggleTag(_ tag: Tag) {
+        if let index = tagFilters.firstIndex(where: { $0.persistentModelID == tag.persistentModelID }) {
+            tagFilters.remove(at: index)
+        } else {
+            tagFilters.append(tag)
+        }
+        fetchBooks()
     }
 
     func loadMore() {
@@ -127,18 +136,19 @@ final class LibraryViewModel {
     // MARK: - Tag-filtered browsing
 
     private func loadTagFiltered() {
-        guard let tagFilter else { return }
-        do {
-            var results = tagFilter.books.filter { book in
-                if let statusFilter, book.status != statusFilter { return false }
-                if let ratingFilter, book.rating != ratingFilter { return false }
-                return true
-            }
-            results.sort { sortCompare($0, $1) }
-            searchResults = results.map { SearchResult(book: $0, matchReasons: []) }
-            hasMore = false
-            error = nil
+        guard let firstTag = tagFilters.first else { return }
+        let requiredIDs = Set(tagFilters.map(\.persistentModelID))
+        var results = firstTag.books.filter { book in
+            let bookTagIDs = Set(book.tags.map(\.persistentModelID))
+            guard requiredIDs.isSubset(of: bookTagIDs) else { return false }
+            if let statusFilter, book.status != statusFilter { return false }
+            if let ratingFilter, book.rating != ratingFilter { return false }
+            return true
         }
+        results.sort { sortCompare($0, $1) }
+        searchResults = results.map { SearchResult(book: $0, matchReasons: []) }
+        hasMore = false
+        error = nil
     }
 
     // MARK: - Paginated browsing
@@ -237,8 +247,10 @@ final class LibraryViewModel {
             let candidates = booksByID.values.filter { book in
                 if let statusFilter, book.status != statusFilter { return false }
                 if let ratingFilter, book.rating != ratingFilter { return false }
-                if let tagFilter, !book.tags.contains(where: { $0.persistentModelID == tagFilter.persistentModelID }) {
-                    return false
+                if !tagFilters.isEmpty {
+                    let bookTagIDs = Set(book.tags.map(\.persistentModelID))
+                    let requiredIDs = Set(tagFilters.map(\.persistentModelID))
+                    if !requiredIDs.isSubset(of: bookTagIDs) { return false }
                 }
                 return true
             }
