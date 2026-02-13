@@ -1,4 +1,3 @@
-import PhotosUI
 import SwiftData
 import SwiftUI
 
@@ -7,8 +6,6 @@ struct BookFormScreen: View {
     @Environment(\.dismiss) private var dismiss
     @State private var viewModel: BookFormViewModel?
     @State private var showingScanner = false
-    @State private var selectedPhoto: PhotosPickerItem?
-    @State private var showingCamera = false
 
     let mode: BookFormMode
 
@@ -27,7 +24,6 @@ struct BookFormScreen: View {
 
     private func formContent(_ vm: BookFormViewModel) -> some View {
         Form {
-            coverPhotoSection(vm)
             isbnSection(vm)
             titleSection(vm)
             AuthorEntryView(authorNames: Binding(
@@ -75,61 +71,10 @@ struct BookFormScreen: View {
                 }
             }
         }
-        .sheet(isPresented: $showingCamera) {
-            CameraImagePicker { data in
-                vm.processSelectedImage(data)
-            }
-        }
-        .onChange(of: selectedPhoto) { _, newItem in
-            guard let newItem else { return }
-            Task {
-                if let data = try? await newItem.loadTransferable(type: Data.self) {
-                    vm.processSelectedImage(data)
-                }
-                selectedPhoto = nil
-            }
-        }
-    }
-
-    private func coverPhotoSection(_ vm: BookFormViewModel) -> some View {
-        Section("Cover Photo") {
-            HStack {
-                Spacer()
-                BookCoverView(
-                    coverImageData: vm.selectedImageData,
-                    coverImageURL: vm.coverImageURL.isEmpty ? nil : vm.coverImageURL,
-                    size: CGSize(width: 100, height: 150)
-                )
-                Spacer()
-            }
-
-            PhotosPicker(
-                selection: $selectedPhoto,
-                matching: .images
-            ) {
-                Label("Photo Library", systemImage: "photo.on.rectangle")
-            }
-
-            if CameraImagePicker.isAvailable {
-                Button {
-                    showingCamera = true
-                } label: {
-                    Label("Camera", systemImage: "camera")
-                }
-            }
-
-            if vm.selectedImageData != nil {
-                Button(role: .destructive) {
-                    vm.removeSelectedImage()
-                } label: {
-                    Label("Remove Photo", systemImage: "trash")
-                }
-            }
-        }
     }
 
     private func isbnSection(_ vm: BookFormViewModel) -> some View {
-        Section("ISBN") {
+        Section("Scan ISBN code for automatic entry") {
             HStack {
                 TextField("ISBN", text: Binding(
                     get: { vm.isbn },
