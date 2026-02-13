@@ -82,7 +82,7 @@ struct BookTagsSection: View {
 
             FlowLayout(spacing: 8) {
                 ForEach(suggestedTags) { tag in
-                    SuggestedTagChip(name: tag.displayName) {
+                    SuggestedTagChip(name: tag.displayName, color: tag.resolvedColor) {
                         onAdd(tag.displayName)
                     }
                 }
@@ -125,6 +125,7 @@ private struct RemovableTagChip: View {
 
 private struct SuggestedTagChip: View {
     let name: String
+    var color: Color = .accentColor
     let onTap: () -> Void
 
     var body: some View {
@@ -137,13 +138,12 @@ private struct SuggestedTagChip: View {
             .font(.subheadline)
             .padding(.horizontal, 12)
             .padding(.vertical, 6)
-            .background(Color(.systemGray6))
-            .foregroundStyle(.primary)
+            .background(color.opacity(0.08))
+            .foregroundStyle(color)
             .clipShape(Capsule())
             .overlay {
                 Capsule()
-                    .strokeBorder(style: StrokeStyle(lineWidth: 1, dash: [4, 3]))
-                    .foregroundStyle(Color(.systemGray3))
+                    .strokeBorder(color.opacity(0.3), style: StrokeStyle(lineWidth: 1, dash: [4, 3]))
             }
         }
         .buttonStyle(.plain)

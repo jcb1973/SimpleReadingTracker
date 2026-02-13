@@ -6,11 +6,18 @@ struct ContentView: View {
     @State private var homePath = NavigationPath()
     @State private var libraryPath = NavigationPath()
     @State private var refreshTrigger = 0
+    @State private var libraryStatusFilter: ReadingStatus?
 
     var body: some View {
         TabView(selection: $selectedTab) {
             NavigationStack(path: $homePath) {
-                HomeScreen(refreshTrigger: refreshTrigger)
+                HomeScreen(
+                    refreshTrigger: refreshTrigger,
+                    onStatusTapped: { status in
+                        libraryStatusFilter = status
+                        selectedTab = 1
+                    }
+                )
                     .addBookOverlay(showingAddBook: $showingAddBook)
             }
             .tabItem {
@@ -19,7 +26,10 @@ struct ContentView: View {
             .tag(0)
 
             NavigationStack(path: $libraryPath) {
-                LibraryScreen(refreshTrigger: refreshTrigger)
+                LibraryScreen(
+                    refreshTrigger: refreshTrigger,
+                    statusFilterOverride: $libraryStatusFilter
+                )
                     .addBookOverlay(showingAddBook: $showingAddBook)
             }
             .tabItem {

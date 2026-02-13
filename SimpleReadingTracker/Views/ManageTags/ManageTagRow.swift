@@ -42,8 +42,13 @@ struct ManageTagRow: View {
     }
 
     private var tagPreview: some View {
-        TagChipView(name: isEditing ? editingName.wrappedValue : tag.displayName,
-                    color: tag.resolvedColor)
+        Text(isEditing ? editingName.wrappedValue : tag.displayName)
+            .font(.body)
+            .padding(.horizontal, 14)
+            .padding(.vertical, 8)
+            .background(tag.resolvedColor.opacity(0.15))
+            .foregroundStyle(tag.resolvedColor)
+            .clipShape(Capsule())
     }
 
     private var actionButtons: some View {

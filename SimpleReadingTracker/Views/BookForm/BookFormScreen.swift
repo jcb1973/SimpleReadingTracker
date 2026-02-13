@@ -31,7 +31,6 @@ struct BookFormScreen: View {
                 set: { vm.authorNames = $0 }
             ), onAddField: vm.addAuthorField, onRemoveField: vm.removeAuthorField)
             detailsSection(vm)
-            statusSection(vm)
         }
         .navigationTitle(vm.navigationTitle)
         .navigationBarTitleDisplayMode(.inline)
@@ -137,24 +136,6 @@ struct BookFormScreen: View {
                 set: { vm.bookDescription = $0 }
             ), axis: .vertical)
             .lineLimit(3...6)
-        }
-    }
-
-    private func statusSection(_ vm: BookFormViewModel) -> some View {
-        Section("Status & Rating") {
-            Picker("Status", selection: Binding(
-                get: { vm.status },
-                set: { vm.status = $0 }
-            )) {
-                ForEach(ReadingStatus.allCases) { status in
-                    Text(status.displayName).tag(status)
-                }
-            }
-
-            StarRatingView(rating: Binding(
-                get: { vm.rating },
-                set: { vm.rating = $0 }
-            ))
         }
     }
 }

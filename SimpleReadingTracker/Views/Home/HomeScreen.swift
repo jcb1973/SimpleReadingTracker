@@ -5,6 +5,7 @@ struct HomeScreen: View {
     @Environment(\.modelContext) private var modelContext
     @State private var viewModel: HomeViewModel?
     var refreshTrigger: Int = 0
+    var onStatusTapped: ((ReadingStatus) -> Void)?
 
     var body: some View {
         ScrollView {
@@ -12,6 +13,10 @@ struct HomeScreen: View {
                 if let vm = viewModel {
                     if !vm.currentlyReading.isEmpty {
                         CurrentlyReadingSection(books: vm.currentlyReading)
+                    }
+
+                    ReadingStatsCard(statusCounts: vm.statusCounts) { status in
+                        onStatusTapped?(status)
                     }
 
                     if !vm.recentlyRead.isEmpty {

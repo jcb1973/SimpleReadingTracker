@@ -8,6 +8,7 @@ final class HomeViewModel {
 
     private(set) var currentlyReading: [Book] = []
     private(set) var recentlyRead: [Book] = []
+    private(set) var statusCounts: [ReadingStatus: Int] = [:]
     private(set) var error: String?
 
     init(modelContext: ModelContext) {
@@ -30,6 +31,16 @@ final class HomeViewModel {
             )
             recentDescriptor.fetchLimit = 3
             recentlyRead = try modelContext.fetch(recentDescriptor)
+
+            var counts: [ReadingStatus: Int] = [:]
+            for status in ReadingStatus.allCases {
+                let raw = status.rawValue
+                let desc = FetchDescriptor<Book>(
+                    predicate: #Predicate { $0.statusRawValue == raw }
+                )
+                counts[status] = (try? modelContext.fetchCount(desc)) ?? 0
+            }
+            statusCounts = counts
 
             error = nil
         } catch {

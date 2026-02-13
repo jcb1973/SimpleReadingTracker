@@ -6,64 +6,72 @@ struct LibraryScreen: View {
     @State private var viewModel: LibraryViewModel?
     @State private var showingManageTags = false
     var refreshTrigger: Int = 0
+    var statusFilterOverride: Binding<ReadingStatus?> = .constant(nil)
 
     var body: some View {
-        VStack(spacing: 0) {
-            if let vm = viewModel, !vm.allTags.isEmpty {
-                LibraryTagBar(
-                    tags: vm.allTags,
-                    selectedTagIDs: Set(vm.tagFilters.map(\.persistentModelID)),
-                    onToggle: { vm.toggleTag($0) }
-                )
-                .padding(.horizontal)
-                .padding(.bottom, 4)
-
-                Button {
-                    showingManageTags = true
-                } label: {
-                    Label("Manage Tags", systemImage: "tag")
-                        .font(.caption)
-                }
-                .buttonStyle(.plain)
-                .foregroundStyle(.secondary)
-                .padding(.horizontal)
-                .padding(.bottom, 8)
-            }
-
-            List {
-                if let vm = viewModel {
-                    if vm.books.isEmpty {
-                        EmptyStateView(
-                            systemImage: "magnifyingglass",
-                            title: "No Books Found",
-                            message: vm.hasActiveFilters
-                                ? "No books match your current filters. Try adjusting or clearing them."
-                                : "Your library is empty. Add a book to get started."
+        List {
+            if let vm = viewModel {
+                if !vm.allTags.isEmpty {
+                    Section {
+                        LibraryTagBar(
+                            tags: vm.allTags,
+                            selectedTagIDs: Set(vm.tagFilters.map(\.persistentModelID)),
+                            tagFilterMode: vm.tagFilterMode,
+                            onToggle: { vm.toggleTag($0) },
+                            onToggleMode: {
+                                vm.tagFilterMode = vm.tagFilterMode == .and ? .or : .and
+                                vm.fetchBooks()
+                            }
                         )
-                        .listRowSeparator(.hidden)
-                    } else {
-                        ForEach(vm.books) { book in
-                            NavigationLink(value: book) {
-                                LibraryBookRow(
-                                    book: book,
-                                    matchReasons: vm.matchReasons(for: book)
-                                )
+
+                        HStack {
+                            Button {
+                                showingManageTags = true
+                            } label: {
+                                Label("Manage Tags", systemImage: "tag")
+                                    .font(.subheadline)
                             }
-                            .onAppear {
-                                if book.persistentModelID == vm.books.last?.persistentModelID {
-                                    vm.loadMore()
-                                }
+                            .buttonStyle(.plain)
+                            .foregroundStyle(.secondary)
+
+                            Spacer()
+                        }
+                    }
+                    .listRowSeparator(.hidden)
+                    .listRowInsets(EdgeInsets(top: 0, leading: 16, bottom: 0, trailing: 16))
+                }
+
+                if vm.books.isEmpty {
+                    EmptyStateView(
+                        systemImage: "magnifyingglass",
+                        title: "No Books Found",
+                        message: vm.hasActiveFilters
+                            ? "No books match your current filters. Try adjusting or clearing them."
+                            : "Your library is empty. Add a book to get started."
+                    )
+                    .listRowSeparator(.hidden)
+                } else {
+                    ForEach(vm.books) { book in
+                        NavigationLink(value: book) {
+                            LibraryBookRow(
+                                book: book,
+                                matchReasons: vm.matchReasons(for: book)
+                            )
+                        }
+                        .onAppear {
+                            if book.persistentModelID == vm.books.last?.persistentModelID {
+                                vm.loadMore()
                             }
-                            .swipeActions(edge: .trailing) {
-                                Button(role: .destructive) {
-                                    vm.deleteBook(book)
-                                } label: {
-                                    Label("Delete", systemImage: "trash")
-                                }
+                        }
+                        .swipeActions(edge: .trailing) {
+                            Button(role: .destructive) {
+                                vm.deleteBook(book)
+                            } label: {
+                                Label("Delete", systemImage: "trash")
                             }
-                            .swipeActions(edge: .leading) {
-                                statusSwipeActions(for: book, vm: vm)
-                            }
+                        }
+                        .swipeActions(edge: .leading) {
+                            statusSwipeActions(for: book, vm: vm)
                         }
                     }
                 }
@@ -92,14 +100,24 @@ struct LibraryScreen: View {
             if viewModel == nil {
                 let vm = LibraryViewModel(modelContext: modelContext)
                 viewModel = vm
+                applyStatusOverride(vm)
                 vm.fetchBooks()
             }
         }
         .onAppear {
+            if let vm = viewModel {
+                applyStatusOverride(vm)
+            }
             viewModel?.fetchBooks()
         }
         .onChange(of: refreshTrigger) { _, _ in
             viewModel?.fetchBooks()
+        }
+        .onChange(of: statusFilterOverride.wrappedValue) { _, newValue in
+            guard let status = newValue, let vm = viewModel else { return }
+            vm.statusFilter = status
+            vm.fetchBooks()
+            statusFilterOverride.wrappedValue = nil
         }
         .sheet(isPresented: $showingManageTags, onDismiss: {
             viewModel?.fetchBooks()
@@ -109,6 +127,14 @@ struct LibraryScreen: View {
         .navigationDestination(for: Book.self) { book in
             BookDetailScreen(book: book)
         }
+    }
+
+    // MARK: - Helpers
+
+    private func applyStatusOverride(_ vm: LibraryViewModel) {
+        guard let status = statusFilterOverride.wrappedValue else { return }
+        vm.statusFilter = status
+        statusFilterOverride.wrappedValue = nil
     }
 
     // MARK: - Toolbar

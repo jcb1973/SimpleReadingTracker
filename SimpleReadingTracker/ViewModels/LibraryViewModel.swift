@@ -2,6 +2,11 @@ import Foundation
 import Observation
 import SwiftData
 
+enum TagFilterMode: String, Sendable {
+    case and
+    case or
+}
+
 @Observable
 final class LibraryViewModel {
     private let modelContext: ModelContext
@@ -14,6 +19,7 @@ final class LibraryViewModel {
     var statusFilter: ReadingStatus?
     var ratingFilter: Int?
     var tagFilters: [Tag] = []
+    var tagFilterMode: TagFilterMode = .and
     var sortOption: SortOption = .dateAdded
     var sortAscending = false
 
@@ -104,10 +110,12 @@ final class LibraryViewModel {
     }
 
     func deleteBook(_ book: Book) {
+        let bookID = book.persistentModelID
+        searchResults.removeAll { $0.book.persistentModelID == bookID }
         modelContext.delete(book)
         do {
             try modelContext.save()
-            fetchBooks()
+            fetchTags()
         } catch {
             self.error = PersistenceError.deleteFailed(underlying: error).localizedDescription
         }
@@ -136,11 +144,29 @@ final class LibraryViewModel {
     // MARK: - Tag-filtered browsing
 
     private func loadTagFiltered() {
-        guard let firstTag = tagFilters.first else { return }
-        let requiredIDs = Set(tagFilters.map(\.persistentModelID))
-        var results = firstTag.books.filter { book in
-            let bookTagIDs = Set(book.tags.map(\.persistentModelID))
-            guard requiredIDs.isSubset(of: bookTagIDs) else { return false }
+        guard !tagFilters.isEmpty else { return }
+        let filterIDs = Set(tagFilters.map(\.persistentModelID))
+
+        let candidateBooks: Set<PersistentIdentifier>
+        var bookPool: [PersistentIdentifier: Book] = [:]
+        for tag in tagFilters {
+            for book in tag.books {
+                bookPool[book.persistentModelID] = book
+            }
+        }
+
+        switch tagFilterMode {
+        case .and:
+            candidateBooks = bookPool.keys.filter { bookID in
+                guard let book = bookPool[bookID] else { return false }
+                let bookTagIDs = Set(book.tags.map(\.persistentModelID))
+                return filterIDs.isSubset(of: bookTagIDs)
+            }.reduce(into: Set<PersistentIdentifier>()) { $0.insert($1) }
+        case .or:
+            candidateBooks = Set(bookPool.keys)
+        }
+
+        var results = candidateBooks.compactMap { bookPool[$0] }.filter { book in
             if let statusFilter, book.status != statusFilter { return false }
             if let ratingFilter, book.rating != ratingFilter { return false }
             return true
@@ -249,8 +275,13 @@ final class LibraryViewModel {
                 if let ratingFilter, book.rating != ratingFilter { return false }
                 if !tagFilters.isEmpty {
                     let bookTagIDs = Set(book.tags.map(\.persistentModelID))
-                    let requiredIDs = Set(tagFilters.map(\.persistentModelID))
-                    if !requiredIDs.isSubset(of: bookTagIDs) { return false }
+                    let filterIDs = Set(tagFilters.map(\.persistentModelID))
+                    switch tagFilterMode {
+                    case .and:
+                        if !filterIDs.isSubset(of: bookTagIDs) { return false }
+                    case .or:
+                        if filterIDs.isDisjoint(with: bookTagIDs) { return false }
+                    }
                 }
                 return true
             }
