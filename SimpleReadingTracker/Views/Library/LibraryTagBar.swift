@@ -29,7 +29,8 @@ struct LibraryTagBar: View {
                         TagFilterChip(
                             name: tag.displayName,
                             count: tag.books.count,
-                            isSelected: selectedTagIDs.contains(tag.persistentModelID)
+                            isSelected: selectedTagIDs.contains(tag.persistentModelID),
+                            color: tag.resolvedColor
                         ) {
                             onToggle(tag)
                         }
@@ -58,6 +59,7 @@ private struct TagFilterChip: View {
     let name: String
     let count: Int
     let isSelected: Bool
+    var color: Color = .accentColor
     let onTap: () -> Void
 
     var body: some View {
@@ -70,7 +72,7 @@ private struct TagFilterChip: View {
             .font(.subheadline)
             .padding(.horizontal, 14)
             .padding(.vertical, 8)
-            .background(isSelected ? Color.accentColor : Color(.tertiarySystemFill))
+            .background(isSelected ? color : Color(.tertiarySystemFill))
             .foregroundStyle(isSelected ? .white : .primary)
             .clipShape(Capsule())
         }

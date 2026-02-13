@@ -7,6 +7,7 @@ struct BookDetailScreen: View {
     @State private var viewModel: BookDetailViewModel?
     @State private var showingEditSheet = false
     @State private var showingDeleteConfirmation = false
+    @State private var showingManageTags = false
 
     let book: Book
 
@@ -57,6 +58,14 @@ struct BookDetailScreen: View {
                     onAdd: { vm.addTag(named: $0) },
                     onRemove: { vm.removeTag($0) }
                 )
+                Button {
+                    showingManageTags = true
+                } label: {
+                    Label("Manage Tags", systemImage: "tag")
+                        .font(.subheadline)
+                }
+                .buttonStyle(.plain)
+                .foregroundStyle(.secondary)
                 BookNotesSection(viewModel: vm)
                 BookActionsSection(
                     viewModel: vm,
@@ -70,6 +79,9 @@ struct BookDetailScreen: View {
             NavigationStack {
                 BookFormScreen(mode: .edit(vm.book))
             }
+        }
+        .sheet(isPresented: $showingManageTags) {
+            ManageTagsScreen()
         }
         .alert("Delete Book", isPresented: $showingDeleteConfirmation) {
             Button("Delete", role: .destructive) {

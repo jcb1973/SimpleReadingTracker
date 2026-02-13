@@ -4,6 +4,7 @@ import SwiftData
 struct LibraryScreen: View {
     @Environment(\.modelContext) private var modelContext
     @State private var viewModel: LibraryViewModel?
+    @State private var showingManageTags = false
     var refreshTrigger: Int = 0
 
     var body: some View {
@@ -14,6 +15,17 @@ struct LibraryScreen: View {
                     selectedTagIDs: Set(vm.tagFilters.map(\.persistentModelID)),
                     onToggle: { vm.toggleTag($0) }
                 )
+                .padding(.horizontal)
+                .padding(.bottom, 4)
+
+                Button {
+                    showingManageTags = true
+                } label: {
+                    Label("Manage Tags", systemImage: "tag")
+                        .font(.caption)
+                }
+                .buttonStyle(.plain)
+                .foregroundStyle(.secondary)
                 .padding(.horizontal)
                 .padding(.bottom, 8)
             }
@@ -88,6 +100,11 @@ struct LibraryScreen: View {
         }
         .onChange(of: refreshTrigger) { _, _ in
             viewModel?.fetchBooks()
+        }
+        .sheet(isPresented: $showingManageTags, onDismiss: {
+            viewModel?.fetchBooks()
+        }) {
+            ManageTagsScreen()
         }
         .navigationDestination(for: Book.self) { book in
             BookDetailScreen(book: book)

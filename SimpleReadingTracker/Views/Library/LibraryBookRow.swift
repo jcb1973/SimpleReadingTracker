@@ -25,7 +25,7 @@ struct LibraryBookRow: View {
             if !book.tags.isEmpty {
                 HStack(spacing: 4) {
                     ForEach(book.tags.prefix(3)) { tag in
-                        TagChipView(name: tag.displayName)
+                        TagChipView(name: tag.displayName, color: tag.resolvedColor)
                     }
                     if book.tags.count > 3 {
                         Text("+\(book.tags.count - 3)")

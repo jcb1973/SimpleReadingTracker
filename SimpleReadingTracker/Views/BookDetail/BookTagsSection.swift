@@ -32,7 +32,7 @@ struct BookTagsSection: View {
             if !book.tags.isEmpty {
                 FlowLayout(spacing: 8) {
                     ForEach(book.tags) { tag in
-                        RemovableTagChip(name: tag.displayName) {
+                        RemovableTagChip(name: tag.displayName, color: tag.resolvedColor) {
                             onRemove(tag)
                         }
                     }
@@ -100,6 +100,7 @@ struct BookTagsSection: View {
 
 private struct RemovableTagChip: View {
     let name: String
+    var color: Color = .accentColor
     let onRemove: () -> Void
 
     var body: some View {
@@ -116,8 +117,8 @@ private struct RemovableTagChip: View {
         .font(.subheadline)
         .padding(.horizontal, 12)
         .padding(.vertical, 6)
-        .background(.tint.opacity(0.15))
-        .foregroundStyle(.tint)
+        .background(color.opacity(0.15))
+        .foregroundStyle(color)
         .clipShape(Capsule())
     }
 }
