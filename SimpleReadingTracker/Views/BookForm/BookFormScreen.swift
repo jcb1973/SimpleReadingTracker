@@ -30,10 +30,6 @@ struct BookFormScreen: View {
                 get: { vm.authorNames },
                 set: { vm.authorNames = $0 }
             ), onAddField: vm.addAuthorField, onRemoveField: vm.removeAuthorField)
-            TagEntryView(tagNames: Binding(
-                get: { vm.tagNames },
-                set: { vm.tagNames = $0 }
-            ), onAddField: vm.addTagField, onRemoveField: vm.removeTagField)
             detailsSection(vm)
             statusSection(vm)
         }

@@ -77,6 +77,33 @@ final class BookDetailViewModel {
         }
     }
 
+    func addTag(named name: String) {
+        let trimmed = name.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty else { return }
+
+        let lowered = trimmed.lowercased()
+        let existing = findTag(named: lowered)
+        let tag = existing ?? Tag(name: trimmed)
+        if existing == nil {
+            modelContext.insert(tag)
+        }
+
+        guard !book.tags.contains(where: { $0.persistentModelID == tag.persistentModelID }) else { return }
+        book.tags.append(tag)
+        save()
+    }
+
+    func removeTag(_ tag: Tag) {
+        book.tags.removeAll { $0.persistentModelID == tag.persistentModelID }
+        save()
+    }
+
+    private func findTag(named lowercaseName: String) -> Tag? {
+        let descriptor = FetchDescriptor<Tag>()
+        let tags = (try? modelContext.fetch(descriptor)) ?? []
+        return tags.first { $0.name == lowercaseName }
+    }
+
     func deleteBook() {
         modelContext.delete(book)
         do {

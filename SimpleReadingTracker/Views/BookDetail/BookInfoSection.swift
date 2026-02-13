@@ -12,9 +12,6 @@ struct BookInfoSection: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
             headerRow
-            if !book.tags.isEmpty {
-                tagsRow
-            }
             if let description = book.bookDescription, !description.isEmpty {
                 descriptionSection(description)
             }
@@ -72,14 +69,6 @@ struct BookInfoSection: View {
         .buttonStyle(.plain)
     }
 
-    private var tagsRow: some View {
-        FlowLayout(spacing: 6) {
-            ForEach(book.tags) { tag in
-                TagChipView(name: tag.displayName)
-            }
-        }
-    }
-
     private func descriptionSection(_ text: String) -> some View {
         VStack(alignment: .leading, spacing: 4) {
             Text("Description")
@@ -91,7 +80,7 @@ struct BookInfoSection: View {
     }
 }
 
-private struct FlowLayout: Layout {
+struct FlowLayout: Layout {
     var spacing: CGFloat
 
     func sizeThatFits(proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) -> CGSize {

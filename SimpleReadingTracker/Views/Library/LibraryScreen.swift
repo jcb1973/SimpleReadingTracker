@@ -39,6 +39,25 @@ struct LibraryScreen: View {
     }
 
     private func libraryContent(_ vm: LibraryViewModel) -> some View {
+        VStack(spacing: 0) {
+            if !vm.allTags.isEmpty {
+                LibraryTagBar(
+                    tags: vm.allTags,
+                    selectedTag: vm.tagFilter,
+                    onSelect: {
+                        vm.tagFilter = $0
+                        vm.fetchBooks()
+                    }
+                )
+                .padding(.horizontal)
+                .padding(.bottom, 8)
+            }
+
+            bookList(vm)
+        }
+    }
+
+    private func bookList(_ vm: LibraryViewModel) -> some View {
         List {
             if vm.books.isEmpty {
                 EmptyStateView(

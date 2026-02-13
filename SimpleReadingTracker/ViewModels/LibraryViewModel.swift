@@ -13,10 +13,12 @@ final class LibraryViewModel {
     var searchText = ""
     var statusFilter: ReadingStatus?
     var ratingFilter: Int?
+    var tagFilter: Tag?
     var sortOption: SortOption = .dateAdded
     var sortAscending = false
 
     private(set) var searchResults: [SearchResult] = []
+    private(set) var allTags: [Tag] = []
     private(set) var hasMore = true
     private(set) var error: String?
 
@@ -28,6 +30,7 @@ final class LibraryViewModel {
         !searchText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
             || statusFilter != nil
             || ratingFilter != nil
+            || tagFilter != nil
     }
 
     init(modelContext: ModelContext) {
@@ -40,12 +43,27 @@ final class LibraryViewModel {
         searchTask?.cancel()
         searchResults = []
         hasMore = true
+        fetchTags()
 
         let trimmed = searchText.trimmingCharacters(in: .whitespacesAndNewlines)
-        if trimmed.isEmpty {
+        if trimmed.isEmpty, tagFilter == nil {
             loadNextPage()
+        } else if trimmed.isEmpty {
+            loadTagFiltered()
         } else {
             performSearch()
+        }
+    }
+
+    func fetchTags() {
+        do {
+            let descriptor = FetchDescriptor<Tag>()
+            let tags = try modelContext.fetch(descriptor)
+            allTags = tags
+                .filter { !$0.books.isEmpty }
+                .sorted { $0.books.count > $1.books.count }
+        } catch {
+            allTags = []
         }
     }
 
@@ -55,7 +73,11 @@ final class LibraryViewModel {
         if trimmed.isEmpty {
             searchResults = []
             hasMore = true
-            loadNextPage()
+            if tagFilter == nil {
+                loadNextPage()
+            } else {
+                loadTagFiltered()
+            }
             return
         }
         searchTask = Task {
@@ -100,6 +122,23 @@ final class LibraryViewModel {
 
     func matchReasons(for book: Book) -> [MatchReason] {
         searchResults.first { $0.book.persistentModelID == book.persistentModelID }?.matchReasons ?? []
+    }
+
+    // MARK: - Tag-filtered browsing
+
+    private func loadTagFiltered() {
+        guard let tagFilter else { return }
+        do {
+            var results = tagFilter.books.filter { book in
+                if let statusFilter, book.status != statusFilter { return false }
+                if let ratingFilter, book.rating != ratingFilter { return false }
+                return true
+            }
+            results.sort { sortCompare($0, $1) }
+            searchResults = results.map { SearchResult(book: $0, matchReasons: []) }
+            hasMore = false
+            error = nil
+        }
     }
 
     // MARK: - Paginated browsing
@@ -194,10 +233,13 @@ final class LibraryViewModel {
                 }
             }
 
-            // 6. Apply status/rating filters and build match reasons
+            // 6. Apply status/rating/tag filters and build match reasons
             let candidates = booksByID.values.filter { book in
                 if let statusFilter, book.status != statusFilter { return false }
                 if let ratingFilter, book.rating != ratingFilter { return false }
+                if let tagFilter, !book.tags.contains(where: { $0.persistentModelID == tagFilter.persistentModelID }) {
+                    return false
+                }
                 return true
             }
 

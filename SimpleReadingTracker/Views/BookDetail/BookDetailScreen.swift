@@ -52,6 +52,11 @@ struct BookDetailScreen: View {
                         vm.updateRating(rating)
                     }
                 )
+                BookTagsSection(
+                    book: vm.book,
+                    onAdd: { vm.addTag(named: $0) },
+                    onRemove: { vm.removeTag($0) }
+                )
                 BookNotesSection(viewModel: vm)
                 BookActionsSection(
                     viewModel: vm,
