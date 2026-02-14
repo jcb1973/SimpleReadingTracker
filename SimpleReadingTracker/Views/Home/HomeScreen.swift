@@ -11,6 +11,8 @@ struct HomeScreen: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 20) {
+                LogoTitle(title: "Home")
+
                 if let vm = viewModel {
                     if !vm.currentlyReading.isEmpty {
                         CurrentlyReadingSection(books: vm.currentlyReading)
@@ -45,7 +47,7 @@ struct HomeScreen: View {
             )
             .ignoresSafeArea()
         }
-        .navigationTitle("Notes and quotes")
+        .toolbar(.hidden, for: .navigationBar)
         .navigationDestination(for: Book.self) { book in
             BookDetailScreen(book: book)
         }

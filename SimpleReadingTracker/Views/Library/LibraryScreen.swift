@@ -15,6 +15,33 @@ struct LibraryScreen: View {
 
     var body: some View {
         List {
+            Section {
+                HStack {
+                    LogoTitle(title: "Library")
+                    Spacer()
+                    if let vm = viewModel {
+                        sortFilterButtons(vm: vm)
+                    }
+                }
+
+                HStack {
+                    Image(systemName: "magnifyingglass")
+                        .foregroundStyle(.secondary)
+                    TextField("Search books, authors, notes...", text: Binding(
+                        get: { viewModel?.searchText ?? "" },
+                        set: {
+                            viewModel?.searchText = $0
+                            viewModel?.searchTextDidChange()
+                        }
+                    ))
+                }
+                .padding(8)
+                .background(.quaternary)
+                .clipShape(RoundedRectangle(cornerRadius: 10))
+            }
+            .listRowSeparator(.hidden)
+            .listRowInsets(EdgeInsets(top: 0, leading: 16, bottom: 0, trailing: 16))
+
             if let vm = viewModel {
                 if !vm.allTags.isEmpty {
                     Section {
@@ -90,17 +117,8 @@ struct LibraryScreen: View {
             )
             .ignoresSafeArea()
         }
-        .navigationTitle("Library")
-        .searchable(text: Binding(
-            get: { viewModel?.searchText ?? "" },
-            set: {
-                viewModel?.searchText = $0
-                viewModel?.searchTextDidChange()
-            }
-        ), placement: .navigationBarDrawer(displayMode: .always), prompt: "Search books, authors, notes...")
-        .toolbar {
-            navigationToolbarItems
-        }
+        .listStyle(.plain)
+        .toolbar(.hidden, for: .navigationBar)
         .task {
             if viewModel == nil {
                 let vm = LibraryViewModel(modelContext: modelContext)
@@ -199,56 +217,53 @@ struct LibraryScreen: View {
         }
     }
 
-    // MARK: - Toolbar
+    // MARK: - Sort / Filter
 
-    @ToolbarContentBuilder
-    private var navigationToolbarItems: some ToolbarContent {
-        ToolbarItem(placement: .topBarTrailing) {
-            if let vm = viewModel {
-                LibrarySortMenu(
-                    sortOption: Binding(
-                        get: { vm.sortOption },
-                        set: {
-                            vm.sortOption = $0
-                            vm.fetchBooks()
-                        }
-                    ),
-                    ascending: Binding(
-                        get: { vm.sortAscending },
-                        set: {
-                            vm.sortAscending = $0
-                            vm.fetchBooks()
-                        }
-                    )
-                )
-            }
-        }
-        ToolbarItem(placement: .topBarTrailing) {
-            if let vm = viewModel {
-                LibraryFilterView(
-                    statusFilter: Binding(
-                        get: { vm.statusFilter },
-                        set: {
-                            vm.statusFilter = $0
-                            vm.fetchBooks()
-                        }
-                    ),
-                    ratingFilter: Binding(
-                        get: { vm.ratingFilter },
-                        set: {
-                            vm.ratingFilter = $0
-                            vm.fetchBooks()
-                        }
-                    ),
-                    onExport: {
-                        if let url = vm.exportCSV() {
-                            exportFileURL = url
-                            showingExportSheet = true
-                        }
+    @ViewBuilder
+    private func sortFilterButtons(vm: LibraryViewModel) -> some View {
+        HStack(spacing: 12) {
+            LibrarySortMenu(
+                sortOption: Binding(
+                    get: { vm.sortOption },
+                    set: {
+                        vm.sortOption = $0
+                        vm.fetchBooks()
+                    }
+                ),
+                ascending: Binding(
+                    get: { vm.sortAscending },
+                    set: {
+                        vm.sortAscending = $0
+                        vm.fetchBooks()
                     }
                 )
-            }
+            )
+
+            LibraryFilterView(
+                statusFilter: Binding(
+                    get: { vm.statusFilter },
+                    set: {
+                        vm.statusFilter = $0
+                        vm.fetchBooks()
+                    }
+                ),
+                ratingFilter: Binding(
+                    get: { vm.ratingFilter },
+                    set: {
+                        vm.ratingFilter = $0
+                        vm.fetchBooks()
+                    }
+                ),
+                onExport: {
+                    if let url = vm.exportCSV() {
+                        exportFileURL = url
+                        showingExportSheet = true
+                    }
+                }
+            )
         }
+        .font(.title3)
+        .foregroundStyle(.secondary)
     }
 
     // MARK: - Swipe Actions
