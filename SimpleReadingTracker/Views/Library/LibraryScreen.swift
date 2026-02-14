@@ -7,6 +7,7 @@ struct LibraryScreen: View {
     @State private var showingManageTags = false
     @State private var showingExportSheet = false
     @State private var exportFileURL: URL?
+    @State private var bookToDelete: Book?
     var refreshTrigger: Int = 0
     var statusFilterOverride: Binding<ReadingStatus?> = .constant(nil)
     var ratingFilterOverride: Binding<Int?> = .constant(nil)
@@ -69,7 +70,7 @@ struct LibraryScreen: View {
                         }
                         .swipeActions(edge: .trailing) {
                             Button(role: .destructive) {
-                                vm.deleteBook(book)
+                                bookToDelete = book
                             } label: {
                                 Label("Delete", systemImage: "trash")
                             }
@@ -153,6 +154,24 @@ struct LibraryScreen: View {
             isPresented: $showingExportSheet,
             activityItems: exportFileURL.map { [$0] } ?? []
         )
+        .alert("Delete Book", isPresented: Binding(
+            get: { bookToDelete != nil },
+            set: { if !$0 { bookToDelete = nil } }
+        )) {
+            Button("Delete", role: .destructive) {
+                if let book = bookToDelete {
+                    viewModel?.deleteBook(book)
+                    bookToDelete = nil
+                }
+            }
+            Button("Cancel", role: .cancel) {
+                bookToDelete = nil
+            }
+        } message: {
+            if let book = bookToDelete {
+                Text("Are you sure you want to delete \"\(book.title)\"? This cannot be undone.")
+            }
+        }
         .navigationDestination(for: Book.self) { book in
             BookDetailScreen(book: book)
         }

@@ -113,13 +113,13 @@ private struct TagFilterChip: View {
             HStack(spacing: 4) {
                 Text(name)
                 Text("\(count)")
-                    .foregroundStyle(isSelected ? .white.opacity(0.8) : color.opacity(0.6))
+                    .foregroundStyle(.black)
             }
             .font(.subheadline)
             .padding(.horizontal, 14)
             .padding(.vertical, 8)
             .background(isSelected ? color : color.opacity(0.12))
-            .foregroundStyle(isSelected ? .white : color)
+            .foregroundStyle(.black)
             .clipShape(Capsule())
         }
         .buttonStyle(.plain)

@@ -118,7 +118,7 @@ private struct RemovableTagChip: View {
         .padding(.horizontal, 12)
         .padding(.vertical, 6)
         .background(color.opacity(0.15))
-        .foregroundStyle(color)
+        .foregroundStyle(.black)
         .clipShape(Capsule())
     }
 }
@@ -139,7 +139,7 @@ private struct SuggestedTagChip: View {
             .padding(.horizontal, 12)
             .padding(.vertical, 6)
             .background(color.opacity(0.08))
-            .foregroundStyle(color)
+            .foregroundStyle(.black)
             .clipShape(Capsule())
             .overlay {
                 Capsule()

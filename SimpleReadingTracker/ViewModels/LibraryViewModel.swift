@@ -329,7 +329,7 @@ final class LibraryViewModel {
                 book.dateStarted.map { dateFormatter.string(from: $0) } ?? "",
                 book.dateFinished.map { dateFormatter.string(from: $0) } ?? "",
                 csvEscape(book.isbn ?? ""),
-                csvEscape(book.userNotes ?? "")
+                csvEscape(book.notes.map(\.content).joined(separator: "; "))
             ]
             csv += fields.joined(separator: ",") + "\n"
         }

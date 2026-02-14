@@ -45,7 +45,7 @@ struct HomeScreen: View {
             )
             .ignoresSafeArea()
         }
-        .navigationTitle("Reading Notebook")
+        .navigationTitle("Notes and quotes")
         .navigationDestination(for: Book.self) { book in
             BookDetailScreen(book: book)
         }

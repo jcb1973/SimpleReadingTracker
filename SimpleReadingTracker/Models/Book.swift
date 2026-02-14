@@ -16,10 +16,11 @@ final class Book {
     var dateAdded: Date
     var dateStarted: Date?
     var dateFinished: Date?
-    var userNotes: String?
-
     @Relationship(deleteRule: .cascade, inverse: \Note.book)
     var notes: [Note]
+
+    @Relationship(deleteRule: .cascade, inverse: \Quote.book)
+    var quotes: [Quote]
 
     @Relationship(inverse: \Author.books)
     var authors: [Author]
@@ -65,6 +66,7 @@ final class Book {
         self.dateStarted = dateStarted
         self.dateFinished = dateFinished
         self.notes = []
+        self.quotes = []
         self.authors = []
         self.tags = []
     }

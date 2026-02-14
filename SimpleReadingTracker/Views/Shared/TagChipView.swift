@@ -10,7 +10,7 @@ struct TagChipView: View {
             .padding(.horizontal, 8)
             .padding(.vertical, 4)
             .background(color.opacity(0.15))
-            .foregroundStyle(color)
+            .foregroundStyle(.black)
             .clipShape(Capsule())
     }
 }

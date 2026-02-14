@@ -66,7 +66,7 @@ struct BookDetailScreen: View {
                 }
                 .buttonStyle(.plain)
                 .foregroundStyle(.secondary)
-                BookNotesSection(viewModel: vm)
+                NotesQuotesSection(book: vm.book)
                 BookActionsSection(
                     viewModel: vm,
                     showingEditSheet: $showingEditSheet,

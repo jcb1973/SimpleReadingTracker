@@ -47,7 +47,7 @@ struct ManageTagRow: View {
             .padding(.horizontal, 14)
             .padding(.vertical, 8)
             .background(tag.resolvedColor.opacity(0.15))
-            .foregroundStyle(tag.resolvedColor)
+            .foregroundStyle(.black)
             .clipShape(Capsule())
     }
 

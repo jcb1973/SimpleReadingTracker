@@ -5,20 +5,21 @@ import SwiftData
 @Observable
 final class BookDetailViewModel {
     private let modelContext: ModelContext
-    private var noteSaveTask: Task<Void, Never>?
-    private var notesSavedDismissTask: Task<Void, Never>?
 
     let book: Book
-    var noteText: String {
-        didSet { debounceSaveNotes() }
-    }
-    private(set) var notesSaved = false
     private(set) var error: String?
+
+    var notes: [Note] {
+        book.notes.sorted { $0.createdAt > $1.createdAt }
+    }
+
+    var quotes: [Quote] {
+        book.quotes.sorted { $0.createdAt > $1.createdAt }
+    }
 
     init(book: Book, modelContext: ModelContext) {
         self.book = book
         self.modelContext = modelContext
-        self.noteText = book.userNotes ?? ""
     }
 
     func updateStatus(_ status: ReadingStatus) {
@@ -49,32 +50,6 @@ final class BookDetailViewModel {
     func updateCoverImage(_ data: Data?) {
         book.coverImageData = data
         save()
-    }
-
-    func saveNotesNow() {
-        noteSaveTask?.cancel()
-        book.userNotes = noteText.isEmpty ? nil : noteText
-        save()
-        showNotesSavedIndicator()
-    }
-
-    private func showNotesSavedIndicator() {
-        notesSavedDismissTask?.cancel()
-        notesSaved = true
-        notesSavedDismissTask = Task { [weak self] in
-            try? await Task.sleep(for: .seconds(2))
-            guard !Task.isCancelled else { return }
-            self?.notesSaved = false
-        }
-    }
-
-    private func debounceSaveNotes() {
-        noteSaveTask?.cancel()
-        noteSaveTask = Task { [weak self] in
-            try? await Task.sleep(for: .seconds(1))
-            guard !Task.isCancelled else { return }
-            self?.saveNotesNow()
-        }
     }
 
     func addTag(named name: String) {
