@@ -45,18 +45,18 @@ struct LibraryScreen: View {
             if let vm = viewModel {
                 if !vm.allTags.isEmpty {
                     Section {
-                        LibraryTagBar(
-                            tags: vm.allTags,
-                            selectedTagIDs: Set(vm.tagFilters.map(\.persistentModelID)),
-                            tagFilterMode: vm.tagFilterMode,
-                            onToggle: { vm.toggleTag($0) },
-                            onToggleMode: {
-                                vm.tagFilterMode = vm.tagFilterMode == .and ? .or : .and
-                                vm.fetchBooks()
-                            }
-                        )
+                        VStack(alignment: .leading, spacing: 8) {
+                            LibraryTagBar(
+                                tags: vm.allTags,
+                                selectedTagIDs: Set(vm.tagFilters.map(\.persistentModelID)),
+                                tagFilterMode: vm.tagFilterMode,
+                                onToggle: { vm.toggleTag($0) },
+                                onToggleMode: {
+                                    vm.tagFilterMode = vm.tagFilterMode == .and ? .or : .and
+                                    vm.fetchBooks()
+                                }
+                            )
 
-                        HStack {
                             Button {
                                 showingManageTags = true
                             } label: {
@@ -65,12 +65,14 @@ struct LibraryScreen: View {
                             }
                             .buttonStyle(.plain)
                             .foregroundStyle(.secondary)
-
-                            Spacer()
                         }
+                        .padding(12)
+                        .background(.regularMaterial)
+                        .clipShape(RoundedRectangle(cornerRadius: 12))
                     }
                     .listRowSeparator(.hidden)
-                    .listRowInsets(EdgeInsets(top: 0, leading: 16, bottom: 0, trailing: 16))
+                    .listRowBackground(Color.clear)
+                    .listRowInsets(EdgeInsets(top: 4, leading: 16, bottom: 4, trailing: 16))
                 }
 
                 if vm.books.isEmpty {
@@ -90,6 +92,13 @@ struct LibraryScreen: View {
                                 matchReasons: vm.matchReasons(for: book)
                             )
                         }
+                        .listRowBackground(
+                            RoundedRectangle(cornerRadius: 12)
+                                .fill(.regularMaterial)
+                                .padding(.vertical, 4)
+                        )
+                        .listRowSeparator(.hidden)
+                        .listRowInsets(EdgeInsets(top: 4, leading: 16, bottom: 4, trailing: 16))
                         .onAppear {
                             if book.persistentModelID == vm.books.last?.persistentModelID {
                                 vm.loadMore()
