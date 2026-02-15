@@ -65,9 +65,13 @@ final class QuoteEditorViewModel {
     }
 
     func applyCroppedImage(_ image: UIImage) {
-        capturedImage = image
+        let croppedImage = image
         rawCapturedImage = nil
         showingCropView = false
+        Task {
+            try? await Task.sleep(for: .milliseconds(400))
+            capturedImage = croppedImage
+        }
     }
 
     func cancelCrop() {
