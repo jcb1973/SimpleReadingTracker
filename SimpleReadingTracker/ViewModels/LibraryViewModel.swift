@@ -131,10 +131,13 @@ final class LibraryViewModel {
         }
         do {
             try modelContext.save()
-            fetchBooks()
         } catch {
             self.error = PersistenceError.saveFailed(underlying: error).localizedDescription
         }
+    }
+
+    var hasStatusFilter: Bool {
+        statusFilter != nil
     }
 
     func matchReasons(for book: Book) -> [MatchReason] {

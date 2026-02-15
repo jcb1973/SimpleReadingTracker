@@ -85,7 +85,7 @@ struct LibraryScreen: View {
                                 book: book,
                                 matchReasons: vm.matchReasons(for: book),
                                 onStatusTapped: {
-                                    vm.updateStatus(for: book, to: book.status.next)
+                                    cycleStatus(for: book, vm: vm)
                                 }
                             )
                         }
@@ -124,14 +124,13 @@ struct LibraryScreen: View {
             .ignoresSafeArea()
         }
         .listStyle(.plain)
-        .overlay(alignment: .topTrailing) {
+        .navigationTitle("")
+        .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
             if let vm = viewModel {
-                sortFilterButtons(vm: vm)
-                    .padding(.trailing, 16)
-                    .padding(.top, 4)
+                sortFilterToolbarItems(vm: vm)
             }
         }
-        .toolbar(.hidden, for: .navigationBar)
         .task {
             if viewModel == nil {
                 let vm = LibraryViewModel(modelContext: modelContext)
@@ -232,9 +231,9 @@ struct LibraryScreen: View {
 
     // MARK: - Sort / Filter
 
-    @ViewBuilder
-    private func sortFilterButtons(vm: LibraryViewModel) -> some View {
-        HStack(spacing: 12) {
+    @ToolbarContentBuilder
+    private func sortFilterToolbarItems(vm: LibraryViewModel) -> some ToolbarContent {
+        ToolbarItem(placement: .topBarTrailing) {
             LibrarySortMenu(
                 sortOption: Binding(
                     get: { vm.sortOption },
@@ -251,7 +250,8 @@ struct LibraryScreen: View {
                     }
                 )
             )
-
+        }
+        ToolbarItem(placement: .topBarTrailing) {
             LibraryFilterView(
                 statusFilter: Binding(
                     get: { vm.statusFilter },
@@ -275,8 +275,24 @@ struct LibraryScreen: View {
                 }
             )
         }
-        .font(.title3)
-        .foregroundStyle(.secondary)
+    }
+
+    // MARK: - Status Cycling
+
+    private func cycleStatus(for book: Book, vm: LibraryViewModel) {
+        let newStatus = book.status.next
+        vm.updateStatus(for: book, to: newStatus)
+
+        if vm.hasStatusFilter {
+            Task {
+                try? await Task.sleep(for: .milliseconds(600))
+                withAnimation(.easeInOut(duration: 0.35)) {
+                    vm.fetchBooks()
+                }
+            }
+        } else {
+            vm.fetchBooks()
+        }
     }
 
     // MARK: - Swipe Actions
@@ -286,21 +302,21 @@ struct LibraryScreen: View {
         switch book.status {
         case .toRead:
             Button {
-                vm.updateStatus(for: book, to: .reading)
+                cycleStatus(for: book, vm: vm)
             } label: {
                 Label("Start Reading", systemImage: "book.fill")
             }
             .tint(.orange)
         case .reading:
             Button {
-                vm.updateStatus(for: book, to: .read)
+                cycleStatus(for: book, vm: vm)
             } label: {
                 Label("Mark Read", systemImage: "checkmark.circle.fill")
             }
             .tint(.green)
         case .read:
             Button {
-                vm.updateStatus(for: book, to: .toRead)
+                cycleStatus(for: book, vm: vm)
             } label: {
                 Label("Read Again", systemImage: "arrow.counterclockwise")
             }
