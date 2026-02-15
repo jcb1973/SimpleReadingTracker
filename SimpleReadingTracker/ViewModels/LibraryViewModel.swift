@@ -65,9 +65,7 @@ final class LibraryViewModel {
         do {
             let descriptor = FetchDescriptor<Tag>()
             let tags = try modelContext.fetch(descriptor)
-            allTags = tags
-                .filter { !$0.books.isEmpty }
-                .sorted { $0.books.count > $1.books.count }
+            allTags = tags.sorted { $0.books.count > $1.books.count }
         } catch {
             allTags = []
         }
