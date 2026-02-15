@@ -26,7 +26,7 @@ struct LibraryScreen: View {
                     Image(systemName: "magnifyingglass")
                         .foregroundStyle(.secondary)
                         .accessibilityHidden(true)
-                    TextField("Search books, authors, notes...", text: Binding(
+                    TextField("Search books, authors, notes, quotes...", text: Binding(
                         get: { viewModel?.searchText ?? "" },
                         set: {
                             viewModel?.searchText = $0
