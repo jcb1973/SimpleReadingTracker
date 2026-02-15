@@ -117,6 +117,12 @@ private struct NoteRowView: View {
     let action: () -> Void
 
     @State private var isExpanded = false
+    @State private var truncatedHeight: CGFloat = 0
+    @State private var fullHeight: CGFloat = 0
+
+    private var isTruncated: Bool {
+        fullHeight > truncatedHeight + 1
+    }
 
     var body: some View {
         Button(action: action) {
@@ -125,9 +131,28 @@ private struct NoteRowView: View {
                     .font(.body)
                     .lineLimit(isExpanded ? nil : 3)
                     .foregroundStyle(.primary)
+                    .background(GeometryReader { geo in
+                        Color.clear.onAppear { truncatedHeight = geo.size.height }
+                    })
+                    .background(
+                        Text(note.content)
+                            .font(.body)
+                            .fixedSize(horizontal: false, vertical: true)
+                            .hidden()
+                            .background(GeometryReader { geo in
+                                Color.clear.onAppear { fullHeight = geo.size.height }
+                            })
+                    )
 
-                if !isExpanded {
-                    moreButton
+                if isTruncated {
+                    Button {
+                        withAnimation { isExpanded.toggle() }
+                    } label: {
+                        Text(isExpanded ? "Less" : "More")
+                            .font(.caption.weight(.medium))
+                            .foregroundStyle(.tint)
+                    }
+                    .buttonStyle(.plain)
                 }
 
                 Text(note.createdAt, style: .date)
@@ -138,25 +163,6 @@ private struct NoteRowView: View {
             .frame(maxWidth: .infinity, alignment: .leading)
             .background(.regularMaterial)
             .clipShape(RoundedRectangle(cornerRadius: 12))
-        }
-    }
-
-    @ViewBuilder
-    private var moreButton: some View {
-        ViewThatFits(in: .vertical) {
-            Text(note.content)
-                .font(.body)
-                .lineLimit(3)
-                .hidden()
-
-            Button {
-                withAnimation { isExpanded = true }
-            } label: {
-                Text("More")
-                    .font(.caption.weight(.medium))
-                    .foregroundStyle(.tint)
-            }
-            .buttonStyle(.plain)
         }
     }
 }
