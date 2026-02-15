@@ -53,56 +53,64 @@ struct NotesQuotesSection: View {
     }
 
     private var notesContent: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            ScrollView(.horizontal, showsIndicators: false) {
-                LazyHStack(spacing: 12) {
-                    AddCardView(compact: sortedNotes.isEmpty) { showingAddNote = true }
+        ScrollView(.horizontal, showsIndicators: false) {
+            LazyHStack(spacing: 12) {
+                actionColumn(
+                    hasItems: !sortedNotes.isEmpty,
+                    addAction: { showingAddNote = true },
+                    destination: AllNotesScreen(book: book),
+                    viewAllLabel: "See all notes"
+                )
 
-                    ForEach(sortedNotes) { note in
-                        NoteCardView(note: note)
-                            .onTapGesture { editingNote = note }
-                    }
+                ForEach(sortedNotes) { note in
+                    NoteCardView(note: note)
+                        .onTapGesture { editingNote = note }
                 }
-                .padding(.horizontal, 1)
             }
-
-            if !sortedNotes.isEmpty {
-                NavigationLink {
-                    AllNotesScreen(book: book)
-                } label: {
-                    Text("See all")
-                        .font(.subheadline)
-                }
-                .accessibilityLabel("See all notes")
-                .frame(maxWidth: .infinity, alignment: .trailing)
-            }
+            .padding(.horizontal, 1)
         }
     }
 
     private var quotesContent: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            ScrollView(.horizontal, showsIndicators: false) {
-                LazyHStack(spacing: 12) {
-                    AddCardView(compact: sortedQuotes.isEmpty) { showingAddQuote = true }
+        ScrollView(.horizontal, showsIndicators: false) {
+            LazyHStack(spacing: 12) {
+                actionColumn(
+                    hasItems: !sortedQuotes.isEmpty,
+                    addAction: { showingAddQuote = true },
+                    destination: AllQuotesScreen(book: book),
+                    viewAllLabel: "See all quotes"
+                )
 
-                    ForEach(sortedQuotes) { quote in
-                        QuoteCardView(quote: quote)
-                            .onTapGesture { editingQuote = quote }
-                    }
+                ForEach(sortedQuotes) { quote in
+                    QuoteCardView(quote: quote)
+                        .onTapGesture { editingQuote = quote }
                 }
-                .padding(.horizontal, 1)
             }
+            .padding(.horizontal, 1)
+        }
+    }
 
-            if !sortedQuotes.isEmpty {
+    private func actionColumn<D: View>(
+        hasItems: Bool,
+        addAction: @escaping () -> Void,
+        destination: D,
+        viewAllLabel: String
+    ) -> some View {
+        VStack(spacing: 8) {
+            AddCardView(action: addAction)
+
+            if hasItems {
                 NavigationLink {
-                    AllQuotesScreen(book: book)
+                    destination
                 } label: {
-                    Text("See all")
+                    Text("View all")
                         .font(.subheadline)
                 }
-                .accessibilityLabel("See all quotes")
-                .frame(maxWidth: .infinity, alignment: .trailing)
+                .accessibilityLabel(viewAllLabel)
             }
+
+            Spacer(minLength: 0)
         }
+        .frame(height: 150)
     }
 }
