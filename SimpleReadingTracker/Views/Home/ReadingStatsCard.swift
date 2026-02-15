@@ -17,6 +17,8 @@ struct ReadingStatsCard: View {
                         statusCell(status)
                     }
                     .buttonStyle(.plain)
+                    .accessibilityLabel("\(status.displayName): \(statusCounts[status] ?? 0) books")
+                    .accessibilityHint("Show in library")
                 }
             }
         }

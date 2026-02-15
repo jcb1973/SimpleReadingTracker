@@ -42,7 +42,7 @@ struct LibraryViewModelTests {
         vm.fetchBooks()
         #expect(vm.books.count == 1)
 
-        vm.deleteBook(book)
+        vm.deleteBook(id: book.persistentModelID)
         #expect(vm.books.isEmpty)
     }
 

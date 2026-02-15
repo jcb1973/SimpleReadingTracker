@@ -21,5 +21,25 @@ struct StarRatingView: View {
             }
         }
         .imageScale(.large)
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel("Rating")
+        .accessibilityValue("\(rating ?? 0) of \(maxRating) stars")
+        .accessibilityAdjustableAction { direction in
+            guard isEditable else { return }
+            switch direction {
+            case .increment:
+                let current = rating ?? 0
+                if current < maxRating { rating = current + 1 }
+            case .decrement:
+                let current = rating ?? 0
+                if current > 1 {
+                    rating = current - 1
+                } else {
+                    rating = nil
+                }
+            @unknown default:
+                break
+            }
+        }
     }
 }

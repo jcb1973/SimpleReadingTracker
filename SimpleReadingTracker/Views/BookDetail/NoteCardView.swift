@@ -24,5 +24,7 @@ struct NoteCardView: View {
             RoundedRectangle(cornerRadius: 12)
                 .stroke(.quaternary)
         )
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel("Note: \(note.content)")
     }
 }

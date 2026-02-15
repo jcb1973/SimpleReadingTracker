@@ -9,6 +9,7 @@ struct LogoTitle: View {
                 .resizable()
                 .aspectRatio(contentMode: .fit)
                 .frame(height: 36)
+                .accessibilityHidden(true)
             Text(title)
                 .font(.title)
                 .fontWeight(.bold)

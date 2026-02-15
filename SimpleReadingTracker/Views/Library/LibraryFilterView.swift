@@ -37,12 +37,14 @@ struct LibraryFilterView: View {
                             }
                         }
                     }
+                    .accessibilityLabel("\(stars) stars")
                 }
             }
         } label: {
             Image(systemName: hasActiveFilter
                   ? "line.3.horizontal.decrease.circle.fill"
                   : "line.3.horizontal.decrease.circle")
+                .accessibilityLabel(hasActiveFilter ? "Filters, active" : "Filters")
         }
     }
 }

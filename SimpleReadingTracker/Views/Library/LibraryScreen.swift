@@ -24,6 +24,7 @@ struct LibraryScreen: View {
                 HStack {
                     Image(systemName: "magnifyingglass")
                         .foregroundStyle(.secondary)
+                        .accessibilityHidden(true)
                     TextField("Search books, authors, notes...", text: Binding(
                         get: { viewModel?.searchText ?? "" },
                         set: {

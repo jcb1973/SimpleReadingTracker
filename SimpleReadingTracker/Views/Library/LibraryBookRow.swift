@@ -21,6 +21,8 @@ struct LibraryBookRow: View {
                     .onTapGesture {
                         onStatusTapped?()
                     }
+                    .accessibilityLabel(book.status.displayName)
+                    .accessibilityHint("Cycle reading status")
             }
 
             if !matchReasons.isEmpty {
@@ -36,6 +38,7 @@ struct LibraryBookRow: View {
                         Text("+\(book.tags.count - 3)")
                             .font(.caption2)
                             .foregroundStyle(.secondary)
+                            .accessibilityLabel("\(book.tags.count - 3) more tags")
                     }
                 }
             }

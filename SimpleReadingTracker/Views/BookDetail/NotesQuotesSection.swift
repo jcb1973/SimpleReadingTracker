@@ -73,6 +73,7 @@ struct NotesQuotesSection: View {
                     Text("See all")
                         .font(.subheadline)
                 }
+                .accessibilityLabel("See all notes")
                 .frame(maxWidth: .infinity, alignment: .trailing)
             }
         }
@@ -99,6 +100,7 @@ struct NotesQuotesSection: View {
                     Text("See all")
                         .font(.subheadline)
                 }
+                .accessibilityLabel("See all quotes")
                 .frame(maxWidth: .infinity, alignment: .trailing)
             }
         }

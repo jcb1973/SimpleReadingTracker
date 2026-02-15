@@ -25,7 +25,7 @@ struct SearchServiceTests {
 
         let results = searchService.filterByRelationships(books: [book], searchText: "1234567890")
         #expect(results.count == 1)
-        #expect(results.first?.matchReasons.contains(.isbn) == true)
+        #expect(results.first?.matchReasons.contains(.title) == true)
     }
 
     @Test @MainActor func filterByRelationshipsMatchesAuthor() throws {

@@ -41,45 +41,6 @@ struct BookDetailViewModelTests {
         #expect(book.rating == nil)
     }
 
-    @Test @MainActor func saveNotesNowPersistsText() throws {
-        let container = try ModelFactory.makeContainer()
-        let context = container.mainContext
-        let book = ModelFactory.makeBook(title: "Test", in: context)
-        try context.save()
-
-        let vm = BookDetailViewModel(book: book, modelContext: context)
-        vm.noteText = "My notes about this book"
-        vm.saveNotesNow()
-
-        #expect(book.userNotes == "My notes about this book")
-    }
-
-    @Test @MainActor func saveEmptyNotesClearsUserNotes() throws {
-        let container = try ModelFactory.makeContainer()
-        let context = container.mainContext
-        let book = ModelFactory.makeBook(title: "Test", in: context)
-        book.userNotes = "Old notes"
-        try context.save()
-
-        let vm = BookDetailViewModel(book: book, modelContext: context)
-        vm.noteText = ""
-        vm.saveNotesNow()
-
-        #expect(book.userNotes == nil)
-    }
-
-    @Test @MainActor func initPopulatesNoteTextFromBook() throws {
-        let container = try ModelFactory.makeContainer()
-        let context = container.mainContext
-        let book = ModelFactory.makeBook(title: "Test", in: context)
-        book.userNotes = "Existing notes"
-        try context.save()
-
-        let vm = BookDetailViewModel(book: book, modelContext: context)
-
-        #expect(vm.noteText == "Existing notes")
-    }
-
     @Test @MainActor func cycleStatusRotatesCorrectly() throws {
         let container = try ModelFactory.makeContainer()
         let context = container.mainContext

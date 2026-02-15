@@ -25,6 +25,8 @@ struct BookCard: View {
         )
         .clipShape(RoundedRectangle(cornerRadius: 24))
         .shadow(color: .black.opacity(0.08), radius: 20, y: 8)
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel("\(book.title) by \(book.authorNames)")
     }
 
     private var bookInfo: some View {

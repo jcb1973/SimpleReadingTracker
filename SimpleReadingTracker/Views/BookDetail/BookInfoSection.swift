@@ -34,6 +34,8 @@ struct BookInfoSection: View {
                     StatusBadge(status: book.status)
                 }
                 .buttonStyle(.plain)
+                .accessibilityLabel("Status: \(book.status.displayName)")
+                .accessibilityHint("Cycle reading status")
                 StarRatingView(rating: Binding(
                     get: { book.rating },
                     set: { onRatingChanged?($0) }
@@ -64,9 +66,12 @@ struct BookInfoSection: View {
                     .symbolRenderingMode(.palette)
                     .foregroundStyle(.white, .blue)
                     .offset(x: 4, y: 4)
+                    .accessibilityHidden(true)
             }
         }
         .buttonStyle(.plain)
+        .accessibilityLabel("Book cover")
+        .accessibilityHint("Change cover image")
     }
 
     private func descriptionSection(_ text: String) -> some View {

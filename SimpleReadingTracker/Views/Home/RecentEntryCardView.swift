@@ -68,6 +68,8 @@ struct RecentEntryCardView: View {
             RoundedRectangle(cornerRadius: 12)
                 .stroke(.quaternary)
         )
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel("\(typeLabel) from \(bookTitle): \(contentPreview)")
     }
 
     private var isQuote: Bool {

@@ -41,5 +41,18 @@ struct QuoteCardView: View {
             RoundedRectangle(cornerRadius: 12)
                 .stroke(.quaternary)
         )
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(quoteAccessibilityLabel)
+    }
+
+    private var quoteAccessibilityLabel: String {
+        var parts = [quote.text]
+        if let comment = quote.comment {
+            parts.append(comment)
+        }
+        if let page = quote.pageNumber {
+            parts.append("page \(page)")
+        }
+        return parts.joined(separator: ", ")
     }
 }

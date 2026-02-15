@@ -32,6 +32,7 @@ struct BookCoverView: View {
         }
         .frame(width: size.width, height: size.height)
         .clipShape(RoundedRectangle(cornerRadius: cornerRadius))
+        .accessibilityHidden(true)
     }
 
     private var placeholder: some View {

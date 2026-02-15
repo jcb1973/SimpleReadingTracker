@@ -18,20 +18,6 @@ struct HomeViewModelTests {
         #expect(vm.currentlyReading.first?.title == "Reading Book")
     }
 
-    @Test @MainActor func fetchBooksPopulatesRecentlyRead() throws {
-        let container = try ModelFactory.makeContainer()
-        let context = container.mainContext
-        let book = ModelFactory.makeBook(title: "Finished Book", status: .read, in: context)
-        book.dateFinished = .now
-        try context.save()
-
-        let vm = HomeViewModel(modelContext: context)
-        vm.fetchBooks()
-
-        #expect(vm.recentlyRead.count == 1)
-        #expect(vm.recentlyRead.first?.title == "Finished Book")
-    }
-
     @Test @MainActor func fetchBooksExcludesUnrelatedStatuses() throws {
         let container = try ModelFactory.makeContainer()
         let context = container.mainContext
@@ -42,22 +28,22 @@ struct HomeViewModelTests {
         vm.fetchBooks()
 
         #expect(vm.currentlyReading.isEmpty)
-        #expect(vm.recentlyRead.isEmpty)
     }
 
-    @Test @MainActor func recentlyReadLimitedToFive() throws {
+    @Test @MainActor func fetchBooksPopulatesStatusCounts() throws {
         let container = try ModelFactory.makeContainer()
         let context = container.mainContext
-        for i in 0..<8 {
-            let book = ModelFactory.makeBook(title: "Book \(i)", status: .read, in: context)
-            book.dateFinished = .now
-        }
+        let _ = ModelFactory.makeBook(title: "Book 1", status: .toRead, in: context)
+        let _ = ModelFactory.makeBook(title: "Book 2", status: .reading, in: context)
+        let _ = ModelFactory.makeBook(title: "Book 3", status: .read, in: context)
         try context.save()
 
         let vm = HomeViewModel(modelContext: context)
         vm.fetchBooks()
 
-        #expect(vm.recentlyRead.count == 5)
+        #expect(vm.statusCounts[.toRead] == 1)
+        #expect(vm.statusCounts[.reading] == 1)
+        #expect(vm.statusCounts[.read] == 1)
     }
 
     @Test @MainActor func fetchBooksNoError() throws {
