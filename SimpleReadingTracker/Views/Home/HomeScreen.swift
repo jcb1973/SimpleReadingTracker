@@ -22,9 +22,7 @@ struct HomeScreen: View {
                         onStatusTapped?(status)
                     }
 
-                    StarNavigator(ratingCounts: vm.ratingCounts) { rating in
-                        onRatingTapped?(rating)
-                    }
+                    RecentNotesQuotesSection(entries: vm.recentEntries)
 
                     if vm.currentlyReading.isEmpty {
                         EmptyStateView(

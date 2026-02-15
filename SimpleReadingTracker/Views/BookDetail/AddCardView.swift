@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct AddCardView: View {
+    var compact = false
     let action: () -> Void
 
     var body: some View {
@@ -12,7 +13,7 @@ struct AddCardView: View {
                     .font(.caption)
             }
             .foregroundStyle(.tint)
-            .frame(width: 80, height: 150)
+            .frame(width: 80, height: compact ? 75 : 150)
             .background(.regularMaterial)
             .clipShape(RoundedRectangle(cornerRadius: 12))
             .overlay(

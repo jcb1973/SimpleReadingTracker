@@ -49,7 +49,7 @@ struct NotesQuotesSection: View {
         VStack(alignment: .leading, spacing: 8) {
             ScrollView(.horizontal, showsIndicators: false) {
                 LazyHStack(spacing: 12) {
-                    AddCardView { showingAddNote = true }
+                    AddCardView(compact: sortedNotes.isEmpty) { showingAddNote = true }
 
                     ForEach(sortedNotes) { note in
                         NoteCardView(note: note)
@@ -75,7 +75,7 @@ struct NotesQuotesSection: View {
         VStack(alignment: .leading, spacing: 8) {
             ScrollView(.horizontal, showsIndicators: false) {
                 LazyHStack(spacing: 12) {
-                    AddCardView { showingAddQuote = true }
+                    AddCardView(compact: sortedQuotes.isEmpty) { showingAddQuote = true }
 
                     ForEach(sortedQuotes) { quote in
                         QuoteCardView(quote: quote)

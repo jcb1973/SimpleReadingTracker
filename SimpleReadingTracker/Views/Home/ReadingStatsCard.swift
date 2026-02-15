@@ -23,10 +23,10 @@ struct ReadingStatsCard: View {
     }
 
     private func statusCell(_ status: ReadingStatus) -> some View {
-        VStack(spacing: 6) {
+        VStack(spacing: 4) {
             Image(systemName: status.systemImage)
                 .font(.title2)
-                .frame(height: 28)
+                .frame(height: 16)
                 .foregroundStyle(color(for: status))
 
             Text("\(statusCounts[status] ?? 0)")
