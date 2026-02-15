@@ -5,9 +5,11 @@ import SwiftData
 struct SimpleReadingTrackerApp: App {
     @State private var modelContainer: ModelContainer?
 
+    #if DEBUG
     private var isSeedingEnabled: Bool {
         ProcessInfo.processInfo.arguments.contains("--seed-sample-data")
     }
+    #endif
 
     var body: some Scene {
         WindowGroup {
@@ -19,18 +21,24 @@ struct SimpleReadingTrackerApp: App {
                     .task {
                         do {
                             let config: ModelConfiguration
+                            #if DEBUG
                             if isSeedingEnabled {
                                 config = ModelConfiguration(isStoredInMemoryOnly: true)
                             } else {
                                 config = ModelConfiguration()
                             }
+                            #else
+                            config = ModelConfiguration()
+                            #endif
                             let container = try ModelContainer(
                                 for: Book.self,
                                 configurations: config
                             )
+                            #if DEBUG
                             if isSeedingEnabled {
                                 SampleDataSeeder.seed(into: container.mainContext)
                             }
+                            #endif
                             modelContainer = container
                         } catch {
                             modelContainer = try? ModelContainer(for: Book.self)
