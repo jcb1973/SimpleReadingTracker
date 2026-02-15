@@ -22,4 +22,12 @@ enum ReadingStatus: String, Codable, CaseIterable, Identifiable {
         case .read: "checkmark.circle.fill"
         }
     }
+
+    var next: ReadingStatus {
+        switch self {
+        case .toRead: .reading
+        case .reading: .read
+        case .read: .toRead
+        }
+    }
 }

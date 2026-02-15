@@ -8,7 +8,7 @@ struct RecentlyReadSection: View {
             Label("Recently Read", systemImage: "checkmark.circle.fill")
                 .font(.headline)
 
-            ForEach(books) { book in
+            ForEach(books, id: \.persistentModelID) { book in
                 NavigationLink(value: book) {
                     HStack {
                         VStack(alignment: .leading, spacing: 4) {

@@ -3,9 +3,10 @@ import SwiftUI
 struct LibraryBookRow: View {
     let book: Book
     let matchReasons: [MatchReason]
+    var onStatusTapped: (() -> Void)?
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 6) {
+        VStack(alignment: .leading, spacing: 8) {
             HStack {
                 VStack(alignment: .leading, spacing: 2) {
                     Text(book.title)
@@ -16,6 +17,10 @@ struct LibraryBookRow: View {
                 }
                 Spacer()
                 StatusBadge(status: book.status)
+                    .contentShape(Capsule())
+                    .onTapGesture {
+                        onStatusTapped?()
+                    }
             }
 
             if !matchReasons.isEmpty {
@@ -35,6 +40,6 @@ struct LibraryBookRow: View {
                 }
             }
         }
-        .padding(.vertical, 4)
+        .padding(.vertical, 6)
     }
 }

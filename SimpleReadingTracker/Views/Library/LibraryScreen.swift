@@ -16,13 +16,7 @@ struct LibraryScreen: View {
     var body: some View {
         List {
             Section {
-                HStack {
-                    LogoTitle(title: "Library")
-                    Spacer()
-                    if let vm = viewModel {
-                        sortFilterButtons(vm: vm)
-                    }
-                }
+                LogoTitle(title: "Library")
 
                 HStack {
                     Image(systemName: "magnifyingglass")
@@ -89,13 +83,16 @@ struct LibraryScreen: View {
                         NavigationLink(value: book) {
                             LibraryBookRow(
                                 book: book,
-                                matchReasons: vm.matchReasons(for: book)
+                                matchReasons: vm.matchReasons(for: book),
+                                onStatusTapped: {
+                                    vm.updateStatus(for: book, to: book.status.next)
+                                }
                             )
                         }
                         .listRowBackground(
                             RoundedRectangle(cornerRadius: 12)
                                 .fill(.regularMaterial)
-                                .padding(.vertical, 4)
+                                .padding(.vertical, 6)
                         )
                         .listRowSeparator(.hidden)
                         .listRowInsets(EdgeInsets(top: 4, leading: 16, bottom: 4, trailing: 16))
@@ -127,6 +124,13 @@ struct LibraryScreen: View {
             .ignoresSafeArea()
         }
         .listStyle(.plain)
+        .overlay(alignment: .topTrailing) {
+            if let vm = viewModel {
+                sortFilterButtons(vm: vm)
+                    .padding(.trailing, 16)
+                    .padding(.top, 4)
+            }
+        }
         .toolbar(.hidden, for: .navigationBar)
         .task {
             if viewModel == nil {
