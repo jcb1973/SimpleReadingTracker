@@ -44,8 +44,10 @@ struct CameraImagePicker: UIViewControllerRepresentable {
             let dismissAction = dismiss
             Task.detached {
                 guard let data = image.jpegData(compressionQuality: 0.9) else { return }
-                await callback(data)
-                await MainActor.run { dismissAction() }
+                await MainActor.run {
+                    callback(data)
+                    dismissAction()
+                }
             }
         }
 
