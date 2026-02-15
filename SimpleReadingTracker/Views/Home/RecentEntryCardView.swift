@@ -61,7 +61,7 @@ struct RecentEntryCardView: View {
                 .lineLimit(1)
         }
         .padding(12)
-        .frame(width: 200, height: 150, alignment: .topLeading)
+        .frame(width: 200, height: 180, alignment: .topLeading)
         .background(.regularMaterial)
         .clipShape(RoundedRectangle(cornerRadius: 12))
         .overlay(

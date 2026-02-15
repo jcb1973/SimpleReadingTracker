@@ -4,17 +4,17 @@ struct BookCard: View {
     let book: Book
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 10) {
+        VStack(alignment: .leading, spacing: 8) {
             BookCoverView(
                 coverImageData: book.coverImageData,
                 coverImageURL: book.coverImageURL,
-                size: CGSize(width: 160, height: 200),
-                cornerRadius: 16
+                size: CGSize(width: 140, height: 160),
+                cornerRadius: 14
             )
             bookInfo
         }
-        .frame(width: 160)
-        .padding(14)
+        .frame(width: 140)
+        .padding(10)
         .background(
             RoundedRectangle(cornerRadius: 24)
                 .fill(Color(.secondarySystemBackground))

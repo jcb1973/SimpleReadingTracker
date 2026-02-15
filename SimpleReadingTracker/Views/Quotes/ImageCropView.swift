@@ -32,9 +32,12 @@ struct ImageCropView: View {
                 }
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Crop") {
-                        guard let cropped = viewModel.croppedImage() else { return }
-                        onCropConfirmed(cropped)
+                        Task {
+                            guard let cropped = await viewModel.performCrop() else { return }
+                            onCropConfirmed(cropped)
+                        }
                     }
+                    .disabled(viewModel.isCropping)
                 }
             }
             .toolbarBackground(.hidden, for: .navigationBar)

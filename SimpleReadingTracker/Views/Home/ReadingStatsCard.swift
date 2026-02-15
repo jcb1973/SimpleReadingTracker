@@ -23,25 +23,25 @@ struct ReadingStatsCard: View {
     }
 
     private func statusCell(_ status: ReadingStatus) -> some View {
-        VStack(spacing: 4) {
+        VStack(spacing: 1) {
             Image(systemName: status.systemImage)
-                .font(.title2)
-                .frame(height: 16)
+                .font(.caption)
+                .frame(height: 10)
                 .foregroundStyle(color(for: status))
 
             Text("\(statusCounts[status] ?? 0)")
-                .font(.title2)
+                .font(.subheadline)
                 .fontWeight(.bold)
                 .monospacedDigit()
 
             Text(status.displayName)
-                .font(.caption)
+                .font(.caption2)
                 .foregroundStyle(.secondary)
         }
         .frame(maxWidth: .infinity)
-        .padding(.vertical, 14)
+        .padding(.vertical, 6)
         .background(color(for: status).opacity(0.08))
-        .clipShape(RoundedRectangle(cornerRadius: 12))
+        .clipShape(RoundedRectangle(cornerRadius: 8))
     }
 
     private func color(for status: ReadingStatus) -> Color {

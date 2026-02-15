@@ -23,13 +23,19 @@ struct QuoteLiveTextView: UIViewRepresentable {
 
     func updateUIView(_ uiView: UIImageView, context: Context) {}
 
+    static func dismantleUIView(_ uiView: UIImageView, coordinator: Coordinator) {
+        coordinator.cancelAnalysis()
+    }
+
     func makeCoordinator() -> Coordinator {
         Coordinator(onTextRecognized: onTextRecognized)
     }
 
+    @MainActor
     final class Coordinator: NSObject {
         let onTextRecognized: (String) -> Void
         var interaction: ImageAnalysisInteraction?
+        private var analysisTask: Task<Void, Never>?
 
         init(onTextRecognized: @escaping (String) -> Void) {
             self.onTextRecognized = onTextRecognized
@@ -38,11 +44,13 @@ struct QuoteLiveTextView: UIViewRepresentable {
         func analyzeImage(_ image: UIImage) {
             guard ImageAnalyzer.isSupported else { return }
 
-            Task { @MainActor in
+            analysisTask?.cancel()
+            analysisTask = Task {
                 let analyzer = ImageAnalyzer()
                 let configuration = ImageAnalyzer.Configuration([.text])
                 do {
                     let analysis = try await analyzer.analyze(image, configuration: configuration)
+                    guard !Task.isCancelled else { return }
                     interaction?.analysis = analysis
                     if !analysis.transcript.isEmpty {
                         onTextRecognized(analysis.transcript)
@@ -51,6 +59,11 @@ struct QuoteLiveTextView: UIViewRepresentable {
                     // Analysis failed — user can enter text manually
                 }
             }
+        }
+
+        func cancelAnalysis() {
+            analysisTask?.cancel()
+            analysisTask = nil
         }
     }
 }
