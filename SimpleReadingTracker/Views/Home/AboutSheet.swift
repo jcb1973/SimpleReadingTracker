@@ -39,6 +39,7 @@ struct AboutSheet: View {
             }
         }
         .presentationBackground(Color(.systemBackground))
-        .presentationDetents([.fraction(0.35)])
+        .presentationDetents([.height(300)])
+        .presentationDragIndicator(.visible)
     }
 }
