@@ -21,6 +21,11 @@ struct AboutSheet: View {
                     .foregroundStyle(.secondary)
                     .multilineTextAlignment(.center)
                     .padding(.horizontal, 32)
+
+                Link(destination: URL(string: "https://jcb1973.github.io/marginalia-support/")!) {
+                    Label("Support", systemImage: "questionmark.circle")
+                        .font(.headline)
+                }
             }
             .frame(maxWidth: .infinity)
             .padding(.top, 24)
