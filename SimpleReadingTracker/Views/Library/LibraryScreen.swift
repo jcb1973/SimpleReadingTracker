@@ -1,13 +1,18 @@
 import SwiftUI
 import SwiftData
 
+private struct BookDeletion {
+    let id: PersistentIdentifier
+    let title: String
+}
+
 struct LibraryScreen: View {
     @Environment(\.modelContext) private var modelContext
     @State private var viewModel: LibraryViewModel?
     @State private var showingManageTags = false
     @State private var showingExportSheet = false
     @State private var exportFileURL: URL?
-    @State private var bookToDelete: Book?
+    @State private var bookToDelete: BookDeletion?
     var refreshTrigger: Int = 0
     var statusFilterOverride: Binding<ReadingStatus?> = .constant(nil)
     var ratingFilterOverride: Binding<Int?> = .constant(nil)
@@ -103,7 +108,10 @@ struct LibraryScreen: View {
                         }
                         .swipeActions(edge: .trailing) {
                             Button(role: .destructive) {
-                                bookToDelete = book
+                                bookToDelete = BookDeletion(
+                                    id: book.persistentModelID,
+                                    title: book.title
+                                )
                             } label: {
                                 Label("Delete", systemImage: "trash")
                             }
@@ -186,8 +194,10 @@ struct LibraryScreen: View {
             set: { if !$0 { bookToDelete = nil } }
         )) {
             Button("Delete", role: .destructive) {
-                if let book = bookToDelete {
-                    viewModel?.deleteBook(book)
+                if let deletion = bookToDelete {
+                    withAnimation {
+                        viewModel?.deleteBook(id: deletion.id)
+                    }
                     bookToDelete = nil
                 }
             }
@@ -195,8 +205,8 @@ struct LibraryScreen: View {
                 bookToDelete = nil
             }
         } message: {
-            if let book = bookToDelete {
-                Text("Are you sure you want to delete \"\(book.title)\"? This cannot be undone.")
+            if let deletion = bookToDelete {
+                Text("Are you sure you want to delete \"\(deletion.title)\"? This cannot be undone.")
             }
         }
         .navigationDestination(for: Book.self) { book in

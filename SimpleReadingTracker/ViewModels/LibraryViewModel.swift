@@ -109,9 +109,9 @@ final class LibraryViewModel {
         loadNextPage()
     }
 
-    func deleteBook(_ book: Book) {
-        let bookID = book.persistentModelID
-        searchResults.removeAll { $0.book.persistentModelID == bookID }
+    func deleteBook(id: PersistentIdentifier) {
+        searchResults.removeAll { $0.book.persistentModelID == id }
+        guard let book = modelContext.model(for: id) as? Book else { return }
         modelContext.delete(book)
         do {
             try modelContext.save()
