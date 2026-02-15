@@ -9,6 +9,7 @@ struct HomeScreen: View {
     @State private var exportFileURL: URL?
     @State private var showingImportPicker = false
     @State private var showingImportResult = false
+    @State private var showingAbout = false
     @State private var hasAppeared = false
     var refreshTrigger: Int = 0
     var onStatusTapped: ((ReadingStatus) -> Void)?
@@ -70,6 +71,14 @@ struct HomeScreen: View {
                     } label: {
                         Label("Import (CSV)", systemImage: "square.and.arrow.down")
                     }
+
+                    Divider()
+
+                    Button {
+                        showingAbout = true
+                    } label: {
+                        Label("About", systemImage: "info.circle")
+                    }
                 } label: {
                     Image(systemName: "ellipsis.circle")
                         .accessibilityLabel("More options")
@@ -126,6 +135,9 @@ struct HomeScreen: View {
                 viewModel?.importResult = "Import failed: \(error.localizedDescription)"
                 showingImportResult = true
             }
+        }
+        .sheet(isPresented: $showingAbout) {
+            AboutSheet()
         }
         .alert("Import", isPresented: $showingImportResult) {
             Button("OK") {
