@@ -20,6 +20,7 @@ struct AboutSheet: View {
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
                     .multilineTextAlignment(.center)
+                    .fixedSize(horizontal: false, vertical: true)
                     .padding(.horizontal, 32)
 
                 Link(destination: URL(string: "https://jcb1973.github.io/marginalia-support/")!) {
@@ -33,10 +34,11 @@ struct AboutSheet: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .confirmationAction) {
-                    Button("Done") { dismiss() }
+                    Button("Close") { dismiss() }
                 }
             }
         }
-        .presentationDetents([.fraction(0.3)])
+        .presentationBackground(Color(.systemBackground))
+        .presentationDetents([.fraction(0.35)])
     }
 }
