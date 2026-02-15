@@ -21,24 +21,20 @@ struct HomeScreen: View {
                 LogoTitle(title: "Home")
 
                 if let vm = viewModel {
-                    if !vm.currentlyReading.isEmpty {
-                        CurrentlyReadingSection(books: vm.currentlyReading)
-                    }
+                    let totalBooks = vm.statusCounts.values.reduce(0, +)
 
-                    ReadingStatsCard(statusCounts: vm.statusCounts) { status in
-                        onStatusTapped?(status)
-                    }
+                    if totalBooks == 0 {
+                        GettingStartedCard()
+                    } else {
+                        if !vm.currentlyReading.isEmpty {
+                            CurrentlyReadingSection(books: vm.currentlyReading)
+                        }
 
-                    RecentNotesQuotesSection(entries: vm.recentEntries)
+                        ReadingStatsCard(statusCounts: vm.statusCounts) { status in
+                            onStatusTapped?(status)
+                        }
 
-                    if vm.statusCounts.values.reduce(0, +) == 0 {
-                        EmptyStateView(
-                            systemImage: "book.closed",
-                            title: "No Books Yet",
-                            message: "Add your first book to start tracking your reading."
-                        )
-                        .frame(maxWidth: .infinity)
-                        .padding(.top, 60)
+                        RecentNotesQuotesSection(entries: vm.recentEntries)
                     }
                 }
             }
