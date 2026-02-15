@@ -56,6 +56,11 @@ struct QuoteEditorSheet: View {
                     }
                 }
 
+                Section("Comment") {
+                    TextField("Add your thoughts...", text: $viewModel.comment, axis: .vertical)
+                        .lineLimit(3...6)
+                }
+
                 Section("Page Number") {
                     TextField("Optional", text: $viewModel.pageNumberText)
                         .keyboardType(.numberPad)

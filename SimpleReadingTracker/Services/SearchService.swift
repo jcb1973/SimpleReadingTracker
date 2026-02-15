@@ -22,9 +22,8 @@ enum SortOption: String, CaseIterable, Identifiable {
 enum MatchReason: Equatable {
     case title
     case author(String)
-    case tag(String)
     case note
-    case isbn
+    case quote
 }
 
 struct SearchResult {
@@ -44,10 +43,7 @@ struct SearchService {
         let minRating: Int? = ratingFilter
 
         return #Predicate<Book> { book in
-            (!hasSearch || (
-                book.title.localizedStandardContains(trimmed) ||
-                book.isbn?.localizedStandardContains(trimmed) == true
-            )) &&
+            (!hasSearch || book.title.localizedStandardContains(trimmed)) &&
             (statusRaw == nil || book.statusRawValue == statusRaw!) &&
             (minRating == nil || book.rating == minRating!)
         }
@@ -82,22 +78,21 @@ struct SearchService {
                 reasons.append(.title)
             }
 
-            if let isbn = book.isbn, isbn.localizedCaseInsensitiveContains(trimmed) {
-                reasons.append(.isbn)
-            }
-
             for author in book.authors where author.name.localizedCaseInsensitiveContains(trimmed) {
                 reasons.append(.author(author.name))
-            }
-
-            for tag in book.tags where tag.name.localizedCaseInsensitiveContains(trimmed) ||
-                tag.displayName.localizedCaseInsensitiveContains(trimmed) {
-                reasons.append(.tag(tag.displayName))
             }
 
             for note in book.notes where note.content.localizedCaseInsensitiveContains(trimmed) {
                 reasons.append(.note)
                 break
+            }
+
+            for quote in book.quotes {
+                if quote.text.localizedCaseInsensitiveContains(trimmed) ||
+                   (quote.comment?.localizedCaseInsensitiveContains(trimmed) ?? false) {
+                    reasons.append(.quote)
+                    break
+                }
             }
 
             guard !reasons.isEmpty else { return nil }

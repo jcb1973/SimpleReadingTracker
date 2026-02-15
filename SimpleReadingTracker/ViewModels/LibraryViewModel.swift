@@ -316,9 +316,20 @@ final class LibraryViewModel {
         let fileDateFormatter = DateFormatter()
         fileDateFormatter.dateFormat = "yyyy-MM-dd"
 
-        var csv = "Title,Authors,Status,Rating,Tags,Pages,Publisher,Published Date,Date Added,Date Started,Date Finished,ISBN,Notes\n"
+        var csv = "Title,Authors,Status,Rating,Tags,Pages,Publisher,Published Date,Date Added,Date Started,Date Finished,ISBN,Notes,Quotes\n"
 
         for book in books {
+            let quotesText = book.quotes.map { quote in
+                var entry = quote.text
+                if let comment = quote.comment {
+                    entry += " [Comment: \(comment)]"
+                }
+                if let page = quote.pageNumber {
+                    entry += " (p. \(page))"
+                }
+                return entry
+            }.joined(separator: "; ")
+
             let fields: [String] = [
                 csvEscape(book.title),
                 csvEscape(book.authorNames),
@@ -332,7 +343,8 @@ final class LibraryViewModel {
                 book.dateStarted.map { dateFormatter.string(from: $0) } ?? "",
                 book.dateFinished.map { dateFormatter.string(from: $0) } ?? "",
                 csvEscape(book.isbn ?? ""),
-                csvEscape(book.notes.map(\.content).joined(separator: "; "))
+                csvEscape(book.notes.map(\.content).joined(separator: "; ")),
+                csvEscape(quotesText)
             ]
             csv += fields.joined(separator: ",") + "\n"
         }

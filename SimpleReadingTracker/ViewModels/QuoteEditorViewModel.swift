@@ -8,6 +8,7 @@ import VisionKit
 @MainActor
 final class QuoteEditorViewModel {
     var text: String
+    var comment: String
     var pageNumberText: String
     let quote: Quote?
     var capturedImage: UIImage?
@@ -18,6 +19,7 @@ final class QuoteEditorViewModel {
     init(quote: Quote? = nil) {
         self.quote = quote
         self.text = quote?.text ?? ""
+        self.comment = quote?.comment ?? ""
         self.pageNumberText = quote?.pageNumber.map(String.init) ?? ""
     }
 
@@ -35,11 +37,15 @@ final class QuoteEditorViewModel {
 
         let pageNumber = Int(pageNumberText)
 
+        let trimmedComment = comment.trimmingCharacters(in: .whitespacesAndNewlines)
+        let commentValue = trimmedComment.isEmpty ? nil : trimmedComment
+
         if let quote {
             quote.text = trimmed
+            quote.comment = commentValue
             quote.pageNumber = pageNumber
         } else {
-            let newQuote = Quote(text: trimmed, pageNumber: pageNumber, book: book)
+            let newQuote = Quote(text: trimmed, comment: commentValue, pageNumber: pageNumber, book: book)
             modelContext.insert(newQuote)
         }
 

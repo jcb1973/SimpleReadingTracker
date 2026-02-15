@@ -8,8 +8,16 @@ struct QuoteCardView: View {
             Text(quote.text)
                 .font(.subheadline)
                 .italic()
-                .lineLimit(5)
+                .lineLimit(quote.comment != nil ? 3 : 5)
                 .multilineTextAlignment(.leading)
+
+            if let comment = quote.comment {
+                Text(comment)
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                    .lineLimit(2)
+                    .multilineTextAlignment(.leading)
+            }
 
             Spacer()
 

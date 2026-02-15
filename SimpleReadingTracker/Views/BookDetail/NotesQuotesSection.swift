@@ -20,8 +20,8 @@ struct NotesQuotesSection: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             Picker("Content", selection: $selectedTab) {
-                Text("Notes").tag(0)
-                Text("Quotes").tag(1)
+                Text("Notes").tag(0).font(.headline)
+                Text("Quotes").tag(1).font(.headline)
             }
             .pickerStyle(.segmented)
 
