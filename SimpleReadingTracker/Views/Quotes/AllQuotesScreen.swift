@@ -140,20 +140,26 @@ private struct QuoteRowView: View {
     let quote: Quote
     let action: () -> Void
 
+    @State private var isExpanded = false
+
     var body: some View {
         Button(action: action) {
             VStack(alignment: .leading, spacing: 6) {
                 Text(quote.text)
                     .font(.body)
                     .italic()
-                    .lineLimit(3)
+                    .lineLimit(isExpanded ? nil : 3)
                     .foregroundStyle(.primary)
 
                 if let comment = quote.comment, !comment.isEmpty {
                     Text(comment)
                         .font(.subheadline)
                         .foregroundStyle(.secondary)
-                        .lineLimit(2)
+                        .lineLimit(isExpanded ? nil : 2)
+                }
+
+                if !isExpanded {
+                    moreButton
                 }
 
                 HStack {
@@ -172,6 +178,29 @@ private struct QuoteRowView: View {
             .frame(maxWidth: .infinity, alignment: .leading)
             .background(.regularMaterial)
             .clipShape(RoundedRectangle(cornerRadius: 12))
+        }
+    }
+
+    @ViewBuilder
+    private var moreButton: some View {
+        let fullText = Text(quote.text).font(.body).italic()
+        let commentText = quote.comment.map { Text($0).font(.subheadline) }
+
+        ViewThatFits(in: .vertical) {
+            VStack(alignment: .leading, spacing: 6) {
+                fullText.lineLimit(3)
+                if let ct = commentText { ct.lineLimit(2) }
+            }
+            .hidden()
+
+            Button {
+                withAnimation { isExpanded = true }
+            } label: {
+                Text("More")
+                    .font(.caption.weight(.medium))
+                    .foregroundStyle(.tint)
+            }
+            .buttonStyle(.plain)
         }
     }
 }

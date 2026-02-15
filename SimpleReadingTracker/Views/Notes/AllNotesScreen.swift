@@ -116,13 +116,20 @@ private struct NoteRowView: View {
     let note: Note
     let action: () -> Void
 
+    @State private var isExpanded = false
+
     var body: some View {
         Button(action: action) {
             VStack(alignment: .leading, spacing: 6) {
                 Text(note.content)
                     .font(.body)
-                    .lineLimit(3)
+                    .lineLimit(isExpanded ? nil : 3)
                     .foregroundStyle(.primary)
+
+                if !isExpanded {
+                    moreButton
+                }
+
                 Text(note.createdAt, style: .date)
                     .font(.caption)
                     .foregroundStyle(.tertiary)
@@ -131,6 +138,25 @@ private struct NoteRowView: View {
             .frame(maxWidth: .infinity, alignment: .leading)
             .background(.regularMaterial)
             .clipShape(RoundedRectangle(cornerRadius: 12))
+        }
+    }
+
+    @ViewBuilder
+    private var moreButton: some View {
+        ViewThatFits(in: .vertical) {
+            Text(note.content)
+                .font(.body)
+                .lineLimit(3)
+                .hidden()
+
+            Button {
+                withAnimation { isExpanded = true }
+            } label: {
+                Text("More")
+                    .font(.caption.weight(.medium))
+                    .foregroundStyle(.tint)
+            }
+            .buttonStyle(.plain)
         }
     }
 }

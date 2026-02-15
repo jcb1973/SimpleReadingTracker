@@ -34,7 +34,7 @@ struct BookCard: View {
             Text(book.title)
                 .font(.subheadline)
                 .fontWeight(.semibold)
-                .lineLimit(2)
+                .lineLimit(2, reservesSpace: true)
             Text(book.authorNames)
                 .font(.caption)
                 .lineLimit(1)
