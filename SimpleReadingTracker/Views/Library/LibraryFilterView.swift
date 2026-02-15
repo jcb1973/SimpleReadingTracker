@@ -3,7 +3,6 @@ import SwiftUI
 struct LibraryFilterView: View {
     @Binding var statusFilter: ReadingStatus?
     @Binding var ratingFilter: Int?
-    var onExport: (() -> Void)?
 
     private var hasActiveFilter: Bool {
         statusFilter != nil || ratingFilter != nil
@@ -38,14 +37,6 @@ struct LibraryFilterView: View {
                             }
                         }
                     }
-                }
-            }
-
-            Section {
-                Button {
-                    onExport?()
-                } label: {
-                    Label("Export (CSV)", systemImage: "square.and.arrow.up")
                 }
             }
         } label: {

@@ -48,6 +48,7 @@ struct ContentView: View {
         .onChange(of: selectedTab) { _, newTab in
             homePath = NavigationPath()
             libraryPath = NavigationPath()
+            refreshTrigger += 1
             if newTab == 1,
                libraryStatusFilter == nil,
                libraryRatingFilter == nil {

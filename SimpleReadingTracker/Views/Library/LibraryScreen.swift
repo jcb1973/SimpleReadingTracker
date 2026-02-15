@@ -10,8 +10,6 @@ struct LibraryScreen: View {
     @Environment(\.modelContext) private var modelContext
     @State private var viewModel: LibraryViewModel?
     @State private var showingManageTags = false
-    @State private var showingExportSheet = false
-    @State private var exportFileURL: URL?
     @State private var bookToDelete: BookDeletion?
     var refreshTrigger: Int = 0
     var statusFilterOverride: Binding<ReadingStatus?> = .constant(nil)
@@ -185,10 +183,6 @@ struct LibraryScreen: View {
         }) {
             ManageTagsScreen()
         }
-        .shareSheet(
-            isPresented: $showingExportSheet,
-            activityItems: exportFileURL.map { [$0] } ?? []
-        )
         .alert("Delete Book", isPresented: Binding(
             get: { bookToDelete != nil },
             set: { if !$0 { bookToDelete = nil } }
@@ -273,13 +267,7 @@ struct LibraryScreen: View {
                         vm.ratingFilter = $0
                         vm.fetchBooks()
                     }
-                ),
-                onExport: {
-                    if let url = vm.exportCSV() {
-                        exportFileURL = url
-                        showingExportSheet = true
-                    }
-                }
+                )
             )
         }
     }

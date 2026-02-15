@@ -10,6 +10,7 @@ struct BookDetailScreen: View {
     @State private var showingManageTags = false
 
     let book: Book
+    var initialTab: NotesQuotesTab = .quotes
 
     var body: some View {
         Group {
@@ -68,7 +69,7 @@ struct BookDetailScreen: View {
                 }
                 .buttonStyle(.plain)
                 .foregroundStyle(.secondary)
-                NotesQuotesSection(book: vm.book)
+                NotesQuotesSection(book: vm.book, initialTab: initialTab)
                 BookActionsSection(
                     viewModel: vm,
                     showingEditSheet: $showingEditSheet,

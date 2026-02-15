@@ -1,7 +1,13 @@
 import SwiftUI
 
+enum NotesQuotesTab: Int, Hashable {
+    case quotes = 0
+    case notes = 1
+}
+
 struct NotesQuotesSection: View {
     let book: Book
+    var initialTab: NotesQuotesTab = .quotes
 
     @State private var selectedTab = 0
     @State private var showingAddNote = false
@@ -20,15 +26,16 @@ struct NotesQuotesSection: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             Picker("Content", selection: $selectedTab) {
-                Text("Notes").tag(0).font(.headline)
-                Text("Quotes").tag(1).font(.headline)
+                Text("Quotes").tag(0).font(.headline)
+                Text("Notes").tag(1).font(.headline)
             }
             .pickerStyle(.segmented)
+            .onAppear { selectedTab = initialTab.rawValue }
 
             if selectedTab == 0 {
-                notesContent
-            } else {
                 quotesContent
+            } else {
+                notesContent
             }
         }
         .sheet(isPresented: $showingAddNote) {
