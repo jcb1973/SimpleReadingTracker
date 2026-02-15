@@ -20,7 +20,7 @@ struct ManageTagRow: View {
                 Spacer()
 
                 Text("\(tag.books.count)")
-                    .font(.caption)
+                    .font(.body)
                     .foregroundStyle(.secondary)
                     .monospacedDigit()
 
@@ -52,10 +52,11 @@ struct ManageTagRow: View {
     }
 
     private var actionButtons: some View {
-        HStack(spacing: 16) {
+        HStack(spacing: 20) {
             Button(action: onToggleColorPicker) {
                 Image(systemName: "paintpalette")
                     .foregroundStyle(showColorPicker ? .primary : .secondary)
+                    .frame(minWidth: 36, minHeight: 36)
             }
             .buttonStyle(.plain)
             .accessibilityLabel("Change color")
@@ -63,6 +64,7 @@ struct ManageTagRow: View {
             Button(action: onBeginEditing) {
                 Image(systemName: "pencil")
                     .foregroundStyle(.secondary)
+                    .frame(minWidth: 36, minHeight: 36)
             }
             .buttonStyle(.plain)
             .accessibilityLabel("Rename")
@@ -70,15 +72,16 @@ struct ManageTagRow: View {
             Button(action: onDelete) {
                 Image(systemName: "trash")
                     .foregroundStyle(.red)
+                    .frame(minWidth: 36, minHeight: 36)
             }
             .buttonStyle(.plain)
             .accessibilityLabel("Delete")
         }
-        .font(.subheadline)
+        .font(.title2)
     }
 
     private var renameField: some View {
-        HStack(spacing: 8) {
+        HStack(spacing: 12) {
             TextField("Tag name", text: editingName)
                 .textFieldStyle(.roundedBorder)
                 .onSubmit(onCommitRename)
@@ -86,14 +89,17 @@ struct ManageTagRow: View {
             Button(action: onCommitRename) {
                 Image(systemName: "checkmark.circle.fill")
                     .foregroundStyle(.green)
+                    .frame(minWidth: 44, minHeight: 44)
             }
             .buttonStyle(.plain)
 
             Button(action: onCancelEditing) {
                 Image(systemName: "xmark.circle.fill")
                     .foregroundStyle(.secondary)
+                    .frame(minWidth: 44, minHeight: 44)
             }
             .buttonStyle(.plain)
         }
+        .font(.title2)
     }
 }
