@@ -108,9 +108,6 @@ struct LibraryScreen: View {
                                 Label("Delete", systemImage: "trash")
                             }
                         }
-                        .swipeActions(edge: .leading) {
-                            statusSwipeActions(for: book, vm: vm)
-                        }
                     }
                 }
             }
@@ -295,32 +292,4 @@ struct LibraryScreen: View {
         }
     }
 
-    // MARK: - Swipe Actions
-
-    @ViewBuilder
-    private func statusSwipeActions(for book: Book, vm: LibraryViewModel) -> some View {
-        switch book.status {
-        case .toRead:
-            Button {
-                cycleStatus(for: book, vm: vm)
-            } label: {
-                Label("Start Reading", systemImage: "book.fill")
-            }
-            .tint(.orange)
-        case .reading:
-            Button {
-                cycleStatus(for: book, vm: vm)
-            } label: {
-                Label("Mark Read", systemImage: "checkmark.circle.fill")
-            }
-            .tint(.green)
-        case .read:
-            Button {
-                cycleStatus(for: book, vm: vm)
-            } label: {
-                Label("Read Again", systemImage: "arrow.counterclockwise")
-            }
-            .tint(.blue)
-        }
-    }
 }

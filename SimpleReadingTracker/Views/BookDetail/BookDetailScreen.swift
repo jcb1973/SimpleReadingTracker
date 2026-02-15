@@ -30,7 +30,9 @@ struct BookDetailScreen: View {
         .navigationBarTitleDisplayMode(.inline)
         .navigationTitle("Book details")
         .task {
-            viewModel = BookDetailViewModel(book: book, modelContext: modelContext)
+            let vm = BookDetailViewModel(book: book, modelContext: modelContext)
+            viewModel = vm
+            await vm.backfillCoverImageIfNeeded()
         }
     }
 

@@ -1,6 +1,7 @@
 import Foundation
 import Observation
 import SwiftData
+import UIKit
 
 @Observable
 final class BookDetailViewModel {
@@ -50,6 +51,30 @@ final class BookDetailViewModel {
     func updateCoverImage(_ data: Data?) {
         book.coverImageData = data
         save()
+    }
+
+    func backfillCoverImageIfNeeded() async {
+        guard book.coverImageData == nil,
+              let urlString = book.coverImageURL,
+              let url = URL(string: urlString) else { return }
+
+        do {
+            let (data, _) = try await URLSession.shared.data(from: url)
+            guard let image = UIImage(data: data) else { return }
+
+            let maxWidth: CGFloat = 600
+            let scale = image.size.width > maxWidth ? maxWidth / image.size.width : 1.0
+            let newSize = CGSize(width: image.size.width * scale, height: image.size.height * scale)
+            let renderer = UIGraphicsImageRenderer(size: newSize)
+            let compressed = renderer.jpegData(withCompressionQuality: 0.7) { _ in
+                image.draw(in: CGRect(origin: .zero, size: newSize))
+            }
+
+            book.coverImageData = compressed
+            save()
+        } catch {
+            // Will retry next time the detail screen is opened
+        }
     }
 
     func addTag(named name: String) {
