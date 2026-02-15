@@ -38,31 +38,19 @@ struct AllQuotesScreen: View {
 
     var body: some View {
         List {
+            bookHeader
+                .listRowSeparator(.hidden)
+                .listRowInsets(EdgeInsets(top: 8, leading: 16, bottom: 4, trailing: 16))
+
             ForEach(filteredQuotes) { quote in
-                Button {
+                QuoteRowView(quote: quote) {
                     editingQuote = quote
-                } label: {
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text(quote.text)
-                            .font(.body)
-                            .italic()
-                            .lineLimit(3)
-                            .foregroundStyle(.primary)
-                        HStack {
-                            if let page = quote.pageNumber {
-                                Text("p. \(page)")
-                                    .font(.caption)
-                                    .foregroundStyle(.secondary)
-                            }
-                            Spacer()
-                            Text(quote.createdAt, style: .date)
-                                .font(.caption)
-                                .foregroundStyle(.secondary)
-                        }
-                    }
                 }
+                .listRowSeparator(.hidden)
+                .listRowInsets(EdgeInsets(top: 4, leading: 16, bottom: 4, trailing: 16))
             }
         }
+        .listStyle(.plain)
         .searchable(text: $searchText, prompt: "Search quotes...")
         .overlay {
             if filteredQuotes.isEmpty {
@@ -122,6 +110,68 @@ struct AllQuotesScreen: View {
         }
         .sheet(item: $editingQuote) { quote in
             QuoteEditorSheet(book: book, quote: quote)
+        }
+    }
+
+    private var bookHeader: some View {
+        HStack(spacing: 12) {
+            BookCoverView(
+                coverImageData: book.coverImageData,
+                coverImageURL: book.coverImageURL,
+                size: CGSize(width: 40, height: 60),
+                cornerRadius: 6
+            )
+            VStack(alignment: .leading, spacing: 2) {
+                Text(book.title)
+                    .font(.subheadline.weight(.semibold))
+                    .lineLimit(1)
+                if !book.authorNames.isEmpty {
+                    Text(book.authorNames)
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                        .lineLimit(1)
+                }
+            }
+        }
+    }
+}
+
+private struct QuoteRowView: View {
+    let quote: Quote
+    let action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            VStack(alignment: .leading, spacing: 6) {
+                Text(quote.text)
+                    .font(.body)
+                    .italic()
+                    .lineLimit(3)
+                    .foregroundStyle(.primary)
+
+                if let comment = quote.comment, !comment.isEmpty {
+                    Text(comment)
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                        .lineLimit(2)
+                }
+
+                HStack {
+                    if let page = quote.pageNumber {
+                        Text("p. \(page)")
+                            .font(.caption)
+                            .foregroundStyle(.tertiary)
+                    }
+                    Spacer()
+                    Text(quote.createdAt, style: .date)
+                        .font(.caption)
+                        .foregroundStyle(.tertiary)
+                }
+            }
+            .padding(12)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .background(.regularMaterial)
+            .clipShape(RoundedRectangle(cornerRadius: 12))
         }
     }
 }

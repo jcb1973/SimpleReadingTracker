@@ -24,22 +24,19 @@ struct AllNotesScreen: View {
 
     var body: some View {
         List {
+            bookHeader
+                .listRowSeparator(.hidden)
+                .listRowInsets(EdgeInsets(top: 8, leading: 16, bottom: 4, trailing: 16))
+
             ForEach(filteredNotes) { note in
-                Button {
+                NoteRowView(note: note) {
                     editingNote = note
-                } label: {
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text(note.content)
-                            .font(.body)
-                            .lineLimit(3)
-                            .foregroundStyle(.primary)
-                        Text(note.createdAt, style: .date)
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
-                    }
                 }
+                .listRowSeparator(.hidden)
+                .listRowInsets(EdgeInsets(top: 4, leading: 16, bottom: 4, trailing: 16))
             }
         }
+        .listStyle(.plain)
         .searchable(text: $searchText, prompt: "Search notes...")
         .overlay {
             if filteredNotes.isEmpty {
@@ -89,6 +86,51 @@ struct AllNotesScreen: View {
         }
         .sheet(item: $editingNote) { note in
             NoteEditorSheet(book: book, note: note)
+        }
+    }
+
+    private var bookHeader: some View {
+        HStack(spacing: 12) {
+            BookCoverView(
+                coverImageData: book.coverImageData,
+                coverImageURL: book.coverImageURL,
+                size: CGSize(width: 40, height: 60),
+                cornerRadius: 6
+            )
+            VStack(alignment: .leading, spacing: 2) {
+                Text(book.title)
+                    .font(.subheadline.weight(.semibold))
+                    .lineLimit(1)
+                if !book.authorNames.isEmpty {
+                    Text(book.authorNames)
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                        .lineLimit(1)
+                }
+            }
+        }
+    }
+}
+
+private struct NoteRowView: View {
+    let note: Note
+    let action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            VStack(alignment: .leading, spacing: 6) {
+                Text(note.content)
+                    .font(.body)
+                    .lineLimit(3)
+                    .foregroundStyle(.primary)
+                Text(note.createdAt, style: .date)
+                    .font(.caption)
+                    .foregroundStyle(.tertiary)
+            }
+            .padding(12)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .background(.regularMaterial)
+            .clipShape(RoundedRectangle(cornerRadius: 12))
         }
     }
 }
