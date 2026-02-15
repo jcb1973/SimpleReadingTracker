@@ -77,7 +77,7 @@ struct ManageTagsScreen: View {
                     vm.createTag()
                 } label: {
                     Image(systemName: "plus.circle.fill")
-                        .font(.title3)
+                        .font(.title)
                 }
                 .disabled(vm.newTagName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
             }

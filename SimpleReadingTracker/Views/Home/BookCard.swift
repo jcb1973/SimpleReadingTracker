@@ -32,12 +32,11 @@ struct BookCard: View {
     private var bookInfo: some View {
         VStack(alignment: .leading, spacing: 2) {
             Text(book.title)
-                .font(.caption)
+                .font(.subheadline)
                 .fontWeight(.semibold)
                 .lineLimit(2)
             Text(book.authorNames)
-                .font(.caption2)
-                .foregroundStyle(.secondary)
+                .font(.caption)
                 .lineLimit(1)
         }
     }

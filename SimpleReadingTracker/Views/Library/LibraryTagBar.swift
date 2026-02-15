@@ -79,19 +79,18 @@ private struct TagFilterModeToggle: View {
 
     var body: some View {
         Button(action: onToggle) {
-            HStack(spacing: 4) {
+            HStack(spacing: 8) {
                 Text("Match")
-                    .foregroundStyle(.secondary)
                 Text(mode == .and ? "All" : "Any")
                     .fontWeight(.semibold)
                     .foregroundStyle(.primary)
                 Image(systemName: "arrow.triangle.2.circlepath")
-                    .font(.caption2)
+                    .font(.callout)
                     .foregroundStyle(.secondary)
             }
-            .font(.caption)
-            .padding(.horizontal, 10)
-            .padding(.vertical, 5)
+            .font(.callout)
+            .padding(.horizontal, 13)
+            .padding(.vertical, 7)
             .background(Color(.tertiarySystemFill))
             .clipShape(Capsule())
         }

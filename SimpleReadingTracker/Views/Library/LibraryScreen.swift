@@ -11,6 +11,7 @@ struct LibraryScreen: View {
     @State private var viewModel: LibraryViewModel?
     @State private var showingManageTags = false
     @State private var bookToDelete: BookDeletion?
+    @State private var hasAppeared = false
     var refreshTrigger: Int = 0
     var statusFilterOverride: Binding<ReadingStatus?> = .constant(nil)
     var ratingFilterOverride: Binding<Int?> = .constant(nil)
@@ -144,10 +145,13 @@ struct LibraryScreen: View {
             }
         }
         .onAppear {
-            if let vm = viewModel {
-                applyOverrides(vm)
+            guard hasAppeared else {
+                hasAppeared = true
+                return
             }
-            viewModel?.fetchBooks()
+            guard let vm = viewModel else { return }
+            applyOverrides(vm)
+            vm.fetchBooks()
         }
         .onChange(of: refreshTrigger) { _, _ in
             viewModel?.fetchBooks()

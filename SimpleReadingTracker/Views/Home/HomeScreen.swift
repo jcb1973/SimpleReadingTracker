@@ -9,6 +9,7 @@ struct HomeScreen: View {
     @State private var exportFileURL: URL?
     @State private var showingImportPicker = false
     @State private var showingImportResult = false
+    @State private var hasAppeared = false
     var refreshTrigger: Int = 0
     var onStatusTapped: ((ReadingStatus) -> Void)?
     var onRatingTapped: ((Int) -> Void)?
@@ -92,6 +93,10 @@ struct HomeScreen: View {
             }
         }
         .onAppear {
+            guard hasAppeared else {
+                hasAppeared = true
+                return
+            }
             viewModel?.fetchBooks()
         }
         .onChange(of: refreshTrigger) { _, _ in
