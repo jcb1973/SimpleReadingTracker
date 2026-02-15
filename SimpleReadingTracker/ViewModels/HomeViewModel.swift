@@ -98,7 +98,7 @@ final class HomeViewModel {
         do {
             let allBooks = try modelContext.fetch(FetchDescriptor<Book>(sortBy: [SortDescriptor(\.dateAdded, order: .reverse)]))
 
-            var csv = "Title,Authors,Status,Rating,Tags,Pages,Publisher,Published Date,Date Added,Date Started,Date Finished,ISBN,Notes,Quotes\n"
+            var csv = "Title,Authors,Status,Rating,Tags,Pages,Publisher,Published Date,Date Added,Date Started,Date Finished,ISBN,Cover Image URL,Description,Notes,Quotes\n"
 
             for book in allBooks {
                 let quotesText = book.quotes.map { quote in
@@ -125,6 +125,8 @@ final class HomeViewModel {
                     book.dateStarted.map { dateFormatter.string(from: $0) } ?? "",
                     book.dateFinished.map { dateFormatter.string(from: $0) } ?? "",
                     csvEscape(book.isbn ?? ""),
+                    csvEscape(book.coverImageURL ?? ""),
+                    csvEscape(book.bookDescription ?? ""),
                     csvEscape(book.notes.map(\.content).joined(separator: "; ")),
                     csvEscape(quotesText)
                 ]
@@ -187,6 +189,8 @@ final class HomeViewModel {
             let publisher = value(for: "Publisher")
             let publishedDate = value(for: "Published Date")
             let isbn = value(for: "ISBN")
+            let coverImageURL = value(for: "Cover Image URL")
+            let bookDescription = value(for: "Description")
             let dateAdded = value(for: "Date Added").flatMap { dateFormatter.date(from: $0) } ?? .now
             let dateStarted = value(for: "Date Started").flatMap { dateFormatter.date(from: $0) }
             let dateFinished = value(for: "Date Finished").flatMap { dateFormatter.date(from: $0) }
@@ -194,8 +198,10 @@ final class HomeViewModel {
             let book = Book(
                 title: title,
                 isbn: isbn,
+                coverImageURL: coverImageURL,
                 publisher: publisher,
                 publishedDate: publishedDate,
+                bookDescription: bookDescription,
                 pageCount: pageCount,
                 status: status,
                 rating: rating,

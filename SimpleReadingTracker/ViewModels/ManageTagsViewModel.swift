@@ -22,8 +22,9 @@ final class ManageTagsViewModel {
 
     func fetchTags() {
         do {
-            let descriptor = FetchDescriptor<Tag>(sortBy: [SortDescriptor(\.name)])
+            let descriptor = FetchDescriptor<Tag>()
             tags = try modelContext.fetch(descriptor)
+                .sorted { $0.books.count > $1.books.count }
             error = nil
         } catch {
             self.error = PersistenceError.fetchFailed(underlying: error).localizedDescription

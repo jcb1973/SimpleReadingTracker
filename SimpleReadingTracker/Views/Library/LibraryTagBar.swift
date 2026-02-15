@@ -45,7 +45,6 @@ struct LibraryTagBar: View {
                     ForEach(visibleTags) { tag in
                         TagFilterChip(
                             name: tag.displayName,
-                            count: tag.books.count,
                             isSelected: selectedTagIDs.contains(tag.persistentModelID),
                             color: tag.resolvedColor
                         ) {
@@ -102,24 +101,19 @@ private struct TagFilterModeToggle: View {
 
 private struct TagFilterChip: View {
     let name: String
-    let count: Int
     let isSelected: Bool
     var color: Color = .accentColor
     let onTap: () -> Void
 
     var body: some View {
         Button(action: onTap) {
-            HStack(spacing: 4) {
-                Text(name)
-                Text("\(count)")
-                    .foregroundStyle(.black)
-            }
-            .font(.subheadline)
-            .padding(.horizontal, 14)
-            .padding(.vertical, 8)
-            .background(isSelected ? color : color.opacity(0.12))
-            .foregroundStyle(.black)
-            .clipShape(Capsule())
+            Text(name)
+                .font(.subheadline)
+                .padding(.horizontal, 14)
+                .padding(.vertical, 8)
+                .background(isSelected ? color : color.opacity(0.12))
+                .foregroundStyle(.black)
+                .clipShape(Capsule())
         }
         .buttonStyle(.plain)
     }
