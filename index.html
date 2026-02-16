@@ -77,6 +77,14 @@
         border: 1px solid #e5e7eb;
     }
 
+    code {
+        background: #f1f3f5;
+        padding: 2px 5px;
+        border-radius: 4px;
+        font-size: 0.85em;
+        word-break: break-word;
+    }
+
     footer {
         text-align: center;
         padding: 40px 20px;
@@ -184,8 +192,32 @@
 
         <h3>Can I import books?</h3>
         <p>
-            Yes. Use <em>Import (CSV)</em> from the same menu. The CSV should follow the same format
-            as the export file.
+            Yes. Use <em>Import (CSV)</em> from the same menu. The CSV file must have a header row
+            with the following 16 columns:
+        </p>
+        <p style="overflow-x: auto;">
+            <code>Title,Authors,Status,Rating,Tags,Pages,Publisher,Published Date,Date Added,Date Started,Date Finished,ISBN,Cover Image URL,Description,Notes,Quotes</code>
+        </p>
+        <p>Column details:</p>
+        <ul>
+            <li><strong>Title</strong> (required) &ndash; the book title.</li>
+            <li><strong>Authors</strong> &ndash; comma-separated names (e.g. <code>Jane Austen, Charlotte Bront&euml;</code>). Existing authors are reused automatically.</li>
+            <li><strong>Status</strong> &ndash; one of <code>To Read</code>, <code>Reading</code>, or <code>Read</code>. Defaults to "To Read" if blank or unrecognised.</li>
+            <li><strong>Rating</strong> &ndash; a number from 1 to 5, or blank for no rating.</li>
+            <li><strong>Tags</strong> &ndash; semicolon-separated (e.g. <code>Fiction; Favourites</code>). Existing tags are reused.</li>
+            <li><strong>Pages</strong> &ndash; total page count (number or blank).</li>
+            <li><strong>Publisher</strong>, <strong>Published Date</strong>, <strong>ISBN</strong>, <strong>Cover Image URL</strong>, <strong>Description</strong> &ndash; optional text fields.</li>
+            <li><strong>Date Added</strong>, <strong>Date Started</strong>, <strong>Date Finished</strong> &ndash; dates in your device's short date format (e.g. <code>15/02/2026</code> or <code>2/15/26</code>). Date Added defaults to today if blank.</li>
+            <li><strong>Notes</strong> &ndash; semicolon-separated note texts (e.g. <code>Great opening chapter; Revisit part 3</code>).</li>
+            <li><strong>Quotes</strong> &ndash; semicolon-separated. Each quote can include an optional comment and page number: <code>The quote text [Comment: My thoughts] (p. 42)</code>.</li>
+        </ul>
+        <p>Example row:</p>
+        <p style="overflow-x: auto;">
+            <code>"Pride and Prejudice","Jane Austen",Read,5,"Fiction; Classics",432,Penguin,1813,15/02/2026,10/01/2026,14/02/2026,9780141439518,,"A classic novel of manners","Loved the dialogue; Fascinating social commentary","It is a truth universally acknowledged [Comment: Iconic opening] (p. 1); I could easily forgive his pride (p. 20)"</code>
+        </p>
+        <p>
+            The easiest way to get the right format is to export your existing library first
+            and use that file as a template.
         </p>
 
         <h3>Does the app require an internet connection?</h3>
