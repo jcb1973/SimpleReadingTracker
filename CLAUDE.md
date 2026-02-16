@@ -1,7 +1,7 @@
-# CLAUDE.md — iOS Development (iOS 17+)
+# CLAUDE.md — iOS Development (iOS 18+)
 
 ## Tech Stack
-- **Environment:** Swift 6 (Strict Concurrency), SwiftUI, iOS 17+. Use async/await. Prefer structured concurrency; use Task.detached only for offloading CPU-bound work.
+- **Environment:** Swift 6 (Strict Concurrency), SwiftUI, iOS 18+. Use async/await. Prefer structured concurrency; use Task.detached only for offloading CPU-bound work.
 - **Architecture:** MVVM + Observation Framework (`@Observable`).
 - **Data:** SwiftData for persistence; `UserDefaults` for simple flags.
 
@@ -16,6 +16,14 @@
 - **Composition:** Extract subviews if `body` exceeds 30 lines.
 - **Resources:** Use Asset Catalog symbols; no magic strings or numbers.
 - **Error Handling:** Use custom `Error` enums. No `fatalError`.
+
+## Accessibility
+- **Identifiers:** Add `.accessibilityIdentifier(_:)` to all interactive elements (buttons, links, text fields, toggles, pickers) and key content views. Use stable, descriptive camelCase strings (e.g. `"addBookButton"`, `"bookTitleField"`, `"quoteRow_\(quote.id)"`). These enable UI testing and assistive technology.
+- **Labels:** Add `.accessibilityLabel(_:)` when the control's visible text or SF Symbol is insufficient (e.g. icon-only buttons, images with meaning). Prefer concise, action-oriented labels ("Add book", "Sort oldest first").
+- **Traits & Hints:** Use `.accessibilityAddTraits(_:)` and `.accessibilityHint(_:)` where the element's role or expected interaction is non-obvious.
+- **Grouping:** Use `.accessibilityElement(children: .combine)` for composite views that should be read as one unit (e.g. a card with title + subtitle). Use `.accessibilityElement(children: .ignore)` with a custom label for decorative groupings.
+- **Images:** Mark decorative images with `.accessibilityHidden(true)`. Provide meaningful labels for informational images.
+- **Dynamic Type:** Never hard-code font sizes. Use semantic styles (`.body`, `.caption`, etc.) and test with large text sizes.
 
 ## Testing Guidelines
 - **Coverage:** Add unit tests for all non-trivial logic (branching, async, state, errors).
