@@ -10,7 +10,7 @@ struct TagColorPicker: View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack(spacing: 10) {
                 defaultCircle
-                ForEach(TagColor.allCases, id: \.self) { tagColor in
+                ForEach(TagColor.pickerOptions, id: \.self) { tagColor in
                     colorCircle(tagColor)
                 }
             }

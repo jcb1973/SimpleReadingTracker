@@ -26,6 +26,7 @@
 - **Dynamic Type:** Never hard-code font sizes. Use semantic styles (`.body`, `.caption`, etc.) and test with large text sizes.
 
 ## Testing Guidelines
+- **Pre-commit:** Run all unit tests before every commit. All tests must pass.
 - **Coverage:** Add unit tests for all non-trivial logic (branching, async, state, errors).
 - **Async-first:** Prefer `async`/`await` tests; avoid `XCTestExpectation` unless required.
 - **Behavioral:** Test observable behavior, not implementation details.

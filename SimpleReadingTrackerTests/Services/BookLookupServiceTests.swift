@@ -2,6 +2,7 @@ import Testing
 import Foundation
 @testable import SimpleReadingTracker
 
+@Suite(.serialized)
 struct BookLookupServiceTests {
     // MARK: - Mock URL Protocol
 

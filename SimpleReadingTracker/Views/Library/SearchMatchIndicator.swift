@@ -23,6 +23,7 @@ struct SearchMatchIndicator: View {
         switch reason {
         case .title: "Title"
         case .author(let name): "Author: \(name)"
+        case .tag(let name): "Tag: \(name)"
         case .note: "Notes"
         case .quote: "Quotes"
         }

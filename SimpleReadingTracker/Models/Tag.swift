@@ -12,7 +12,7 @@ final class Tag {
     var books: [Book]
 
     var tagColor: TagColor? {
-        get { colorName.flatMap { TagColor(rawValue: $0) } }
+        get { colorName.flatMap { TagColor(rawValue: $0) }?.canonical }
         set { colorName = newValue?.rawValue }
     }
 

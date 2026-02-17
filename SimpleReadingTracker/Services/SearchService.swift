@@ -22,6 +22,7 @@ enum SortOption: String, CaseIterable, Identifiable {
 enum MatchReason: Equatable {
     case title
     case author(String)
+    case tag(String)
     case note
     case quote
 }
@@ -78,8 +79,17 @@ struct SearchService {
                 reasons.append(.title)
             }
 
+            if let isbn = book.isbn, isbn.localizedCaseInsensitiveContains(trimmed) {
+                reasons.append(.title)
+            }
+
             for author in book.authors where author.name.localizedCaseInsensitiveContains(trimmed) {
                 reasons.append(.author(author.name))
+            }
+
+            for tag in book.tags where tag.displayName.localizedCaseInsensitiveContains(trimmed) {
+                reasons.append(.tag(tag.displayName))
+                break
             }
 
             for note in book.notes where note.content.localizedCaseInsensitiveContains(trimmed) {
