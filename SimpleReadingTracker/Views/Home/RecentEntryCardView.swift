@@ -29,47 +29,39 @@ struct RecentEntryCardView: View {
     }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 6) {
-            HStack(spacing: 6) {
-                Text(typeLabel)
-                    .font(.caption2)
-                    .fontWeight(.semibold)
-                    .foregroundStyle(typeColor)
-                    .padding(.horizontal, 6)
-                    .padding(.vertical, 2)
-                    .background(typeColor.opacity(0.12))
-                    .clipShape(RoundedRectangle(cornerRadius: 4))
+        TextCard(height: 210, accessibilityLabel: "\(typeLabel) from \(bookTitle): \(contentPreview)") {
+            VStack(alignment: .leading, spacing: 6) {
+                HStack(spacing: 6) {
+                    Text(typeLabel)
+                        .font(.caption2)
+                        .fontWeight(.semibold)
+                        .foregroundStyle(typeColor)
+                        .padding(.horizontal, 6)
+                        .padding(.vertical, 2)
+                        .background(typeColor.opacity(0.12))
+                        .clipShape(RoundedRectangle(cornerRadius: 4))
+
+                    Spacer()
+
+                    Text(entry.date, style: .date)
+                        .font(.caption2)
+                        .foregroundStyle(.secondary)
+                }
+
+                Text(contentPreview)
+                    .font(.subheadline)
+                    .lineLimit(6)
+                    .multilineTextAlignment(.leading)
+                    .italic(isQuote)
 
                 Spacer()
 
-                Text(entry.date, style: .date)
-                    .font(.caption2)
+                Text(bookTitle)
+                    .font(.caption)
                     .foregroundStyle(.secondary)
+                    .lineLimit(1)
             }
-
-            Text(contentPreview)
-                .font(.subheadline)
-                .lineLimit(4)
-                .multilineTextAlignment(.leading)
-                .italic(isQuote)
-
-            Spacer()
-
-            Text(bookTitle)
-                .font(.caption)
-                .foregroundStyle(.secondary)
-                .lineLimit(1)
         }
-        .padding(12)
-        .frame(width: 200, height: 180, alignment: .topLeading)
-        .background(.regularMaterial)
-        .clipShape(RoundedRectangle(cornerRadius: 12))
-        .overlay(
-            RoundedRectangle(cornerRadius: 12)
-                .stroke(.quaternary)
-        )
-        .accessibilityElement(children: .ignore)
-        .accessibilityLabel("\(typeLabel) from \(bookTitle): \(contentPreview)")
     }
 
     private var isQuote: Bool {

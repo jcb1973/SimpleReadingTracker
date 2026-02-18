@@ -111,6 +111,6 @@ struct NotesQuotesSection: View {
 
             Spacer(minLength: 0)
         }
-        .frame(height: 150)
+        .frame(height: 180)
     }
 }
