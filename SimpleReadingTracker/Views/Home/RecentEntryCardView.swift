@@ -29,7 +29,7 @@ struct RecentEntryCardView: View {
     }
 
     var body: some View {
-        TextCard(height: 210, accessibilityLabel: "\(typeLabel) from \(bookTitle): \(contentPreview)") {
+        TextCard(height: 195, accessibilityLabel: "\(typeLabel) from \(bookTitle): \(contentPreview)") {
             VStack(alignment: .leading, spacing: 6) {
                 HStack(spacing: 6) {
                     Text(typeLabel)
