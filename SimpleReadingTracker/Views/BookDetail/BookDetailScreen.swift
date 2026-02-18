@@ -30,6 +30,28 @@ struct BookDetailScreen: View {
         }
         .navigationBarTitleDisplayMode(.inline)
         .navigationTitle("Book details")
+        .toolbar {
+            ToolbarItem(placement: .primaryAction) {
+                Menu {
+                    Button {
+                        showingEditSheet = true
+                    } label: {
+                        Label("Edit", systemImage: "pencil")
+                    }
+                    .accessibilityIdentifier("editBookButton")
+
+                    Button(role: .destructive) {
+                        showingDeleteConfirmation = true
+                    } label: {
+                        Label("Delete", systemImage: "trash")
+                    }
+                    .accessibilityIdentifier("deleteBookButton")
+                } label: {
+                    Image(systemName: "ellipsis.circle")
+                }
+                .accessibilityIdentifier("bookActionsMenu")
+            }
+        }
         .task {
             let vm = BookDetailViewModel(book: book, modelContext: modelContext)
             viewModel = vm
@@ -70,11 +92,6 @@ struct BookDetailScreen: View {
                 .buttonStyle(.plain)
                 .foregroundStyle(.secondary)
                 NotesQuotesSection(book: vm.book, initialTab: initialTab)
-                BookActionsSection(
-                    viewModel: vm,
-                    showingEditSheet: $showingEditSheet,
-                    showingDeleteConfirmation: $showingDeleteConfirmation
-                )
             }
             .padding()
         }
