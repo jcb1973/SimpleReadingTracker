@@ -5,9 +5,12 @@ import SwiftData
 enum ModelFactory {
     @MainActor
     static func makeContainer() throws -> ModelContainer {
-        let config = ModelConfiguration(isStoredInMemoryOnly: true)
+        let config = ModelConfiguration(
+            isStoredInMemoryOnly: true,
+            cloudKitDatabase: .none
+        )
         return try ModelContainer(
-            for: Book.self, Author.self, Note.self, Tag.self,
+            for: Book.self, Author.self, Note.self, Tag.self, Quote.self,
             configurations: config
         )
     }
