@@ -401,7 +401,7 @@
 				DEVELOPMENT_TEAM = RS6S79WR22;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = SimpleReadingTracker/Info.plist;
+				INFOPLIST_FILE = Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Marginalia;
 				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
 				INFOPLIST_KEY_NSCameraUsageDescription = "Marginalia uses the camera to scan book barcodes for ISBN lookup.";
@@ -438,7 +438,7 @@
 				DEVELOPMENT_TEAM = RS6S79WR22;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = SimpleReadingTracker/Info.plist;
+				INFOPLIST_FILE = Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Marginalia;
 				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
 				INFOPLIST_KEY_NSCameraUsageDescription = "Marginalia uses the camera to scan book barcodes for ISBN lookup.";
