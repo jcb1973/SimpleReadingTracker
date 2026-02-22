@@ -9,7 +9,7 @@ struct AllNotesScreen: View {
     @State private var sortNewestFirst = true
 
     private var filteredNotes: [Note] {
-        var result = book.notes
+        var result = book.notes ?? []
 
         if !searchText.isEmpty {
             result = result.filter { note in

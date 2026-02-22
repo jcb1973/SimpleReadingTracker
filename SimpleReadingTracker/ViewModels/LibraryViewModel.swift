@@ -65,7 +65,7 @@ final class LibraryViewModel {
         do {
             let descriptor = FetchDescriptor<Tag>()
             let tags = try modelContext.fetch(descriptor)
-            allTags = tags.sorted { $0.books.count > $1.books.count }
+            allTags = tags.sorted { ($0.books ?? []).count > ($1.books ?? []).count }
         } catch {
             allTags = []
         }
@@ -154,7 +154,7 @@ final class LibraryViewModel {
         let candidateBooks: Set<PersistentIdentifier>
         var bookPool: [PersistentIdentifier: Book] = [:]
         for tag in tagFilters {
-            for book in tag.books {
+            for book in tag.books ?? [] {
                 bookPool[book.persistentModelID] = book
             }
         }
@@ -163,7 +163,7 @@ final class LibraryViewModel {
         case .and:
             candidateBooks = bookPool.keys.filter { bookID in
                 guard let book = bookPool[bookID] else { return false }
-                let bookTagIDs = Set(book.tags.map(\.persistentModelID))
+                let bookTagIDs = Set((book.tags ?? []).map(\.persistentModelID))
                 return filterIDs.isSubset(of: bookTagIDs)
             }.reduce(into: Set<PersistentIdentifier>()) { $0.insert($1) }
         case .or:
@@ -258,12 +258,12 @@ final class LibraryViewModel {
                 booksByID[book.persistentModelID] = book
             }
             for author in matchingAuthors {
-                for book in author.books {
+                for book in author.books ?? [] {
                     booksByID[book.persistentModelID] = book
                 }
             }
             for tag in matchingTags {
-                for book in tag.books {
+                for book in tag.books ?? [] {
                     booksByID[book.persistentModelID] = book
                 }
             }
@@ -278,7 +278,7 @@ final class LibraryViewModel {
                 if let statusFilter, book.status != statusFilter { return false }
                 if let ratingFilter, book.rating != ratingFilter { return false }
                 if !tagFilters.isEmpty {
-                    let bookTagIDs = Set(book.tags.map(\.persistentModelID))
+                    let bookTagIDs = Set((book.tags ?? []).map(\.persistentModelID))
                     let filterIDs = Set(tagFilters.map(\.persistentModelID))
                     switch tagFilterMode {
                     case .and:

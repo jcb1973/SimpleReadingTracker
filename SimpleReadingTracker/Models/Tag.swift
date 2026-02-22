@@ -9,7 +9,7 @@ final class Tag {
     var name: String = ""
     var displayName: String = ""
     var colorName: String?
-    var books: [Book]
+    var books: [Book]?
 
     var tagColor: TagColor? {
         get { colorName.flatMap { TagColor(rawValue: $0) }?.canonical }

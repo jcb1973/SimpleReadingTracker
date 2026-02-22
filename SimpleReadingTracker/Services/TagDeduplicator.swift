@@ -50,11 +50,11 @@ enum TagDeduplicator {
     @discardableResult
     private static func merge(duplicates: [Tag], in context: ModelContext) -> Tag {
         let survivor = duplicates[0]
-        let existingBookIDs = Set(survivor.books.map(\.persistentModelID))
+        let existingBookIDs = Set((survivor.books ?? []).map(\.persistentModelID))
 
         for duplicate in duplicates.dropFirst() {
-            for book in duplicate.books where !existingBookIDs.contains(book.persistentModelID) {
-                survivor.books.append(book)
+            for book in duplicate.books ?? [] where !existingBookIDs.contains(book.persistentModelID) {
+                survivor.books = (survivor.books ?? []) + [book]
             }
 
             if survivor.colorName == nil, let color = duplicate.colorName {
@@ -62,7 +62,7 @@ enum TagDeduplicator {
             }
 
             // Remove the duplicate's book relationships before deletion
-            duplicate.books.removeAll()
+            duplicate.books?.removeAll()
             context.delete(duplicate)
         }
 

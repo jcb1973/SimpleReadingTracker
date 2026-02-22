@@ -63,7 +63,7 @@ struct BookFormViewModelTests {
 
         let descriptor = FetchDescriptor<Book>()
         let books = try context.fetch(descriptor)
-        #expect(books.first?.authors.count == 2)
+        #expect((books.first?.authors ?? []).count == 2)
     }
 
     @Test @MainActor func saveAttachesTags() throws {
@@ -77,7 +77,7 @@ struct BookFormViewModelTests {
 
         let descriptor = FetchDescriptor<Book>()
         let books = try context.fetch(descriptor)
-        #expect(books.first?.tags.count == 2)
+        #expect((books.first?.tags ?? []).count == 2)
     }
 
     @Test @MainActor func editModePopulatesFields() throws {
@@ -179,7 +179,7 @@ struct BookFormViewModelTests {
 
         let descriptor = FetchDescriptor<Book>()
         let books = try context.fetch(descriptor)
-        #expect(books.first?.authors.count == 1)
+        #expect((books.first?.authors ?? []).count == 1)
     }
 
     @Test @MainActor func navigationTitleReflectsMode() throws {

@@ -19,7 +19,7 @@ struct ManageTagRow: View {
 
                 Spacer()
 
-                Text("\(tag.books.count)")
+                Text("\((tag.books ?? []).count)")
                     .font(.body)
                     .foregroundStyle(.secondary)
                     .monospacedDigit()

@@ -24,7 +24,7 @@ final class ManageTagsViewModel {
         do {
             let descriptor = FetchDescriptor<Tag>()
             tags = try modelContext.fetch(descriptor)
-                .sorted { $0.books.count > $1.books.count }
+                .sorted { ($0.books ?? []).count > ($1.books ?? []).count }
             error = nil
         } catch {
             self.error = PersistenceError.fetchFailed(underlying: error).localizedDescription
@@ -97,8 +97,8 @@ final class ManageTagsViewModel {
     // MARK: - Delete
 
     func deleteTag(_ tag: Tag) {
-        for book in tag.books {
-            book.tags.removeAll { $0.persistentModelID == tag.persistentModelID }
+        for book in tag.books ?? [] {
+            book.tags?.removeAll { $0.persistentModelID == tag.persistentModelID }
         }
         modelContext.delete(tag)
         save()

@@ -17,16 +17,16 @@ final class Book {
     var dateStarted: Date?
     var dateFinished: Date?
     @Relationship(deleteRule: .cascade, inverse: \Note.book)
-    var notes: [Note]
+    var notes: [Note]?
 
     @Relationship(deleteRule: .cascade, inverse: \Quote.book)
-    var quotes: [Quote]
+    var quotes: [Quote]?
 
     @Relationship(inverse: \Author.books)
-    var authors: [Author]
+    var authors: [Author]?
 
     @Relationship(inverse: \Tag.books)
-    var tags: [Tag]
+    var tags: [Tag]?
 
     var status: ReadingStatus {
         get { ReadingStatus(rawValue: statusRawValue) ?? .toRead }
@@ -34,7 +34,7 @@ final class Book {
     }
 
     var authorNames: String {
-        authors.map(\.name).joined(separator: ", ")
+        (authors ?? []).map(\.name).joined(separator: ", ")
     }
 
     init(

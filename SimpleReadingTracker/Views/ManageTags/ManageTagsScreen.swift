@@ -40,7 +40,7 @@ struct ManageTagsScreen: View {
                 }
             } message: {
                 if let tag = tagToDelete {
-                    Text("Delete \"\(tag.displayName)\"? It will be removed from \(tag.books.count) book\(tag.books.count == 1 ? "" : "s").")
+                    Text("Delete \"\(tag.displayName)\"? It will be removed from \((tag.books ?? []).count) book\((tag.books ?? []).count == 1 ? "" : "s").")
                 }
             }
         }

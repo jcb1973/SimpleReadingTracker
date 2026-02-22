@@ -41,14 +41,14 @@ struct TagDeduplicatorTests {
         context.insert(tag2)
 
         let book = ModelFactory.makeBook(title: "Book A", in: context)
-        tag2.books.append(book)
+        tag2.books = (tag2.books ?? []) + [book]
         try context.save()
 
         let result = TagDeduplicator.findOrCreate(named: "fantasy", in: context)
         let tagIDs = Set([tag1.persistentModelID, tag2.persistentModelID])
 
         #expect(tagIDs.contains(result!.persistentModelID))
-        #expect(result?.books.contains(where: { $0.persistentModelID == book.persistentModelID }) == true)
+        #expect((result?.books ?? []).contains(where: { $0.persistentModelID == book.persistentModelID }) == true)
     }
 
     @Test @MainActor func findOrCreateReturnsNilForEmptyInput() throws {
@@ -131,17 +131,17 @@ struct TagDeduplicatorTests {
 
         let bookA = ModelFactory.makeBook(title: "Book A", in: context)
         let bookB = ModelFactory.makeBook(title: "Book B", in: context)
-        tag1.books.append(bookA)
-        tag2.books.append(bookB)
+        tag1.books = (tag1.books ?? []) + [bookA]
+        tag2.books = (tag2.books ?? []) + [bookB]
         // Both share bookA to test dedup of book references
-        tag2.books.append(bookA)
+        tag2.books = (tag2.books ?? []) + [bookA]
         try context.save()
 
         let result = TagDeduplicator.findOrCreate(named: "scifi", in: context)
 
-        let bookIDs = Set(result?.books.map(\.persistentModelID) ?? [])
+        let bookIDs = Set((result?.books ?? []).map(\.persistentModelID))
         #expect(bookIDs.contains(bookA.persistentModelID))
         #expect(bookIDs.contains(bookB.persistentModelID))
-        #expect(result?.books.count == 2)
+        #expect((result?.books ?? []).count == 2)
     }
 }

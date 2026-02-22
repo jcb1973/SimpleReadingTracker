@@ -106,7 +106,7 @@ final class HomeViewModel {
             var csv = "Title,Authors,Status,Rating,Tags,Pages,Publisher,Published Date,Date Added,Date Started,Date Finished,ISBN,Cover Image URL,Description,Notes,Quotes\n"
 
             for book in allBooks {
-                let quotesText = book.quotes.map { quote in
+                let quotesText = (book.quotes ?? []).map { quote in
                     var entry = quote.text
                     if let comment = quote.comment {
                         entry += " [Comment: \(comment)]"
@@ -122,7 +122,7 @@ final class HomeViewModel {
                     csvEscape(book.authorNames),
                     csvEscape(book.status.displayName),
                     book.rating.map(String.init) ?? "",
-                    csvEscape(book.tags.map(\.displayName).joined(separator: "; ")),
+                    csvEscape((book.tags ?? []).map(\.displayName).joined(separator: "; ")),
                     book.pageCount.map(String.init) ?? "",
                     csvEscape(book.publisher ?? ""),
                     csvEscape(book.publishedDate ?? ""),
@@ -132,7 +132,7 @@ final class HomeViewModel {
                     csvEscape(book.isbn ?? ""),
                     csvEscape(book.coverImageURL ?? ""),
                     csvEscape(book.bookDescription ?? ""),
-                    csvEscape(book.notes.map(\.content).joined(separator: "; ")),
+                    csvEscape((book.notes ?? []).map(\.content).joined(separator: "; ")),
                     csvEscape(quotesText)
                 ]
                 csv += fields.joined(separator: ",") + "\n"
@@ -216,12 +216,12 @@ final class HomeViewModel {
                 for name in authorNames where !name.isEmpty {
                     let key = name.lowercased()
                     if let existing = authorCache[key] {
-                        book.authors.append(existing)
+                        book.authors = (book.authors ?? []) + [existing]
                     } else {
                         let author = Author(name: name)
                         modelContext.insert(author)
                         authorCache[key] = author
-                        book.authors.append(author)
+                        book.authors = (book.authors ?? []) + [author]
                     }
                 }
             }
@@ -231,7 +231,7 @@ final class HomeViewModel {
                 let tagNames = tagsString.components(separatedBy: ";").map { $0.trimmingCharacters(in: .whitespaces) }
                 for displayName in tagNames where !displayName.isEmpty {
                     if let tag = TagDeduplicator.findOrCreate(named: displayName, in: modelContext) {
-                        book.tags.append(tag)
+                        book.tags = (book.tags ?? []) + [tag]
                     }
                 }
             }

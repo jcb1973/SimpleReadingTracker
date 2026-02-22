@@ -10,7 +10,7 @@ struct AllQuotesScreen: View {
     @State private var filterHasComment = false
 
     private var filteredQuotes: [Quote] {
-        var result = book.quotes
+        var result = book.quotes ?? []
 
         if filterHasComment {
             result = result.filter { quote in

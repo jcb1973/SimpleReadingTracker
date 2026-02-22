@@ -13,11 +13,11 @@ final class BookDetailViewModel {
     private(set) var error: String?
 
     var notes: [Note] {
-        book.notes.sorted { $0.createdAt > $1.createdAt }
+        (book.notes ?? []).sorted { $0.createdAt > $1.createdAt }
     }
 
     var quotes: [Quote] {
-        book.quotes.sorted { $0.createdAt > $1.createdAt }
+        (book.quotes ?? []).sorted { $0.createdAt > $1.createdAt }
     }
 
     init(book: Book, modelContext: ModelContext) {
@@ -83,13 +83,13 @@ final class BookDetailViewModel {
 
     func addTag(named name: String) {
         guard let tag = TagDeduplicator.findOrCreate(named: name, in: modelContext) else { return }
-        guard !book.tags.contains(where: { $0.persistentModelID == tag.persistentModelID }) else { return }
-        book.tags.append(tag)
+        guard !(book.tags ?? []).contains(where: { $0.persistentModelID == tag.persistentModelID }) else { return }
+        book.tags = (book.tags ?? []) + [tag]
         save()
     }
 
     func removeTag(_ tag: Tag) {
-        book.tags.removeAll { $0.persistentModelID == tag.persistentModelID }
+        book.tags?.removeAll { $0.persistentModelID == tag.persistentModelID }
         save()
     }
 

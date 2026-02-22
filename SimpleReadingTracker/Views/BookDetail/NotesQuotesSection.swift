@@ -11,11 +11,11 @@ struct NotesQuotesSection: View {
     @State private var editingQuote: Quote?
 
     private var sortedNotes: [Note] {
-        book.notes.sorted { $0.createdAt > $1.createdAt }
+        (book.notes ?? []).sorted { $0.createdAt > $1.createdAt }
     }
 
     private var sortedQuotes: [Quote] {
-        book.quotes.sorted { $0.createdAt > $1.createdAt }
+        (book.quotes ?? []).sorted { $0.createdAt > $1.createdAt }
     }
 
     var body: some View {

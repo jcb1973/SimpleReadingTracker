@@ -11,10 +11,10 @@ struct BookTagsSection: View {
     @State private var isExpanded = false
 
     private var filteredTags: [Tag] {
-        let bookTagIDs = Set(book.tags.map(\.persistentModelID))
+        let bookTagIDs = Set((book.tags ?? []).map(\.persistentModelID))
         return allTags
             .filter { !bookTagIDs.contains($0.persistentModelID) }
-            .sorted { $0.books.count > $1.books.count }
+            .sorted { ($0.books ?? []).count > ($1.books ?? []).count }
     }
 
     private var suggestedTags: [Tag] {
@@ -29,9 +29,9 @@ struct BookTagsSection: View {
             Text("Tags")
                 .font(.headline)
 
-            if !book.tags.isEmpty {
+            if !(book.tags ?? []).isEmpty {
                 FlowLayout(spacing: 8) {
-                    ForEach(book.tags) { tag in
+                    ForEach(book.tags ?? []) { tag in
                         RemovableTagChip(name: tag.displayName, color: tag.resolvedColor) {
                             onRemove(tag)
                         }

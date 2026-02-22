@@ -33,7 +33,7 @@ struct SearchServiceTests {
         let context = container.mainContext
         let book = ModelFactory.makeBook(title: "A Book", in: context)
         let author = ModelFactory.makeAuthor(name: "Jane Smith", in: context)
-        book.authors.append(author)
+        book.authors = (book.authors ?? []) + [author]
         try context.save()
 
         let results = searchService.filterByRelationships(books: [book], searchText: "jane")
@@ -49,7 +49,7 @@ struct SearchServiceTests {
         let context = container.mainContext
         let book = ModelFactory.makeBook(title: "A Book", in: context)
         let tag = ModelFactory.makeTag(name: "fiction", in: context)
-        book.tags.append(tag)
+        book.tags = (book.tags ?? []) + [tag]
         try context.save()
 
         let results = searchService.filterByRelationships(books: [book], searchText: "fiction")

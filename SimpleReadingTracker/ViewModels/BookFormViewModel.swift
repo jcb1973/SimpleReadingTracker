@@ -64,9 +64,9 @@ final class BookFormViewModel {
     private func populateFromBook(_ book: Book) {
         title = book.title
         isbn = book.isbn ?? ""
-        authorNames = book.authors.map(\.name)
+        authorNames = (book.authors ?? []).map(\.name)
         if authorNames.isEmpty { authorNames = [""] }
-        tagNames = book.tags.map(\.displayName)
+        tagNames = (book.tags ?? []).map(\.displayName)
         if tagNames.isEmpty { tagNames = [""] }
         publisher = book.publisher ?? ""
         publishedDate = book.publishedDate ?? ""
@@ -168,8 +168,8 @@ final class BookFormViewModel {
         book.rating = rating
         book.coverImageData = selectedImageData
 
-        book.authors.removeAll()
-        book.tags.removeAll()
+        book.authors?.removeAll()
+        book.tags?.removeAll()
         attachAuthors(to: book)
         attachTags(to: book)
 
@@ -191,14 +191,14 @@ final class BookFormViewModel {
             if existing == nil {
                 modelContext.insert(author)
             }
-            book.authors.append(author)
+            book.authors = (book.authors ?? []) + [author]
         }
     }
 
     private func attachTags(to book: Book) {
         for name in tagNames {
             guard let tag = TagDeduplicator.findOrCreate(named: name, in: modelContext) else { continue }
-            book.tags.append(tag)
+            book.tags = (book.tags ?? []) + [tag]
         }
     }
 

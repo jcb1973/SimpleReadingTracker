@@ -29,16 +29,16 @@ struct LibraryBookRow: View {
                 SearchMatchIndicator(reasons: matchReasons)
             }
 
-            if !book.tags.isEmpty {
+            if !(book.tags ?? []).isEmpty {
                 HStack(spacing: 4) {
-                    ForEach(book.tags.prefix(3)) { tag in
+                    ForEach(Array((book.tags ?? []).prefix(3))) { tag in
                         TagChipView(name: tag.displayName, color: tag.resolvedColor)
                     }
-                    if book.tags.count > 3 {
-                        Text("+\(book.tags.count - 3)")
+                    if (book.tags ?? []).count > 3 {
+                        Text("+\((book.tags ?? []).count - 3)")
                             .font(.caption2)
                             .foregroundStyle(.secondary)
-                            .accessibilityLabel("\(book.tags.count - 3) more tags")
+                            .accessibilityLabel("\((book.tags ?? []).count - 3) more tags")
                     }
                 }
             }

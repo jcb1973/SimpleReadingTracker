@@ -83,21 +83,21 @@ struct SearchService {
                 reasons.append(.title)
             }
 
-            for author in book.authors where author.name.localizedCaseInsensitiveContains(trimmed) {
+            for author in book.authors ?? [] where author.name.localizedCaseInsensitiveContains(trimmed) {
                 reasons.append(.author(author.name))
             }
 
-            for tag in book.tags where tag.displayName.localizedCaseInsensitiveContains(trimmed) {
+            for tag in book.tags ?? [] where tag.displayName.localizedCaseInsensitiveContains(trimmed) {
                 reasons.append(.tag(tag.displayName))
                 break
             }
 
-            for note in book.notes where note.content.localizedCaseInsensitiveContains(trimmed) {
+            for note in book.notes ?? [] where note.content.localizedCaseInsensitiveContains(trimmed) {
                 reasons.append(.note)
                 break
             }
 
-            for quote in book.quotes {
+            for quote in book.quotes ?? [] {
                 if quote.text.localizedCaseInsensitiveContains(trimmed) ||
                    (quote.comment?.localizedCaseInsensitiveContains(trimmed) ?? false) {
                     reasons.append(.quote)
