@@ -26,7 +26,8 @@
 - **Dynamic Type:** Never hard-code font sizes. Use semantic styles (`.body`, `.caption`, etc.) and test with large text sizes.
 
 ## Testing Guidelines
-- **Pre-commit:** Run all unit tests before every commit. All tests must pass.
+- **Pre-commit:** Run `swift test` before every commit. All tests must pass. This runs natively on macOS via SPM — no simulator, sub-second execution.
+- **Full xcodebuild tests:** Only run when explicitly requested. Requires `-project` flag: `xcodebuild test -project SimpleReadingTracker.xcodeproj -scheme SimpleReadingTracker -destination 'platform=iOS Simulator,name=iPhone 17 Pro' -only-testing:SimpleReadingTrackerTests -parallel-testing-enabled NO -quiet`
 - **Coverage:** Add unit tests for all non-trivial logic (branching, async, state, errors).
 - **Async-first:** Prefer `async`/`await` tests; avoid `XCTestExpectation` unless required.
 - **Behavioral:** Test observable behavior, not implementation details.

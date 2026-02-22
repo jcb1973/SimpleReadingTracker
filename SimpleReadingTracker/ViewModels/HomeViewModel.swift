@@ -2,6 +2,11 @@ import Foundation
 import Observation
 import SwiftData
 
+enum NotesQuotesTab: Int, Hashable {
+    case quotes = 0
+    case notes = 1
+}
+
 enum RecentEntry: Identifiable {
     case note(Note)
     case quote(Quote)

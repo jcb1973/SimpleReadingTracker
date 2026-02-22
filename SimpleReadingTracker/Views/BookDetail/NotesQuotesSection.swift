@@ -1,10 +1,5 @@
 import SwiftUI
 
-enum NotesQuotesTab: Int, Hashable {
-    case quotes = 0
-    case notes = 1
-}
-
 struct NotesQuotesSection: View {
     let book: Book
     var initialTab: NotesQuotesTab = .quotes

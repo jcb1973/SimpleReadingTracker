@@ -1,7 +1,9 @@
 import Foundation
 import Observation
 import SwiftData
+#if canImport(UIKit)
 import UIKit
+#endif
 
 @Observable
 final class BookDetailViewModel {
@@ -53,6 +55,7 @@ final class BookDetailViewModel {
         save()
     }
 
+    #if canImport(UIKit)
     func backfillCoverImageIfNeeded() async {
         guard book.coverImageData == nil,
               let urlString = book.coverImageURL,
@@ -76,6 +79,7 @@ final class BookDetailViewModel {
             // Will retry next time the detail screen is opened
         }
     }
+    #endif
 
     func addTag(named name: String) {
         guard let tag = TagDeduplicator.findOrCreate(named: name, in: modelContext) else { return }

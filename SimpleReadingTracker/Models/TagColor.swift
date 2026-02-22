@@ -1,4 +1,7 @@
+import Foundation
+#if canImport(SwiftUI)
 import SwiftUI
+#endif
 
 enum TagColor: String, Sendable {
     case red
@@ -26,6 +29,7 @@ enum TagColor: String, Sendable {
         }
     }
 
+    #if canImport(SwiftUI)
     var color: Color {
         canonical._color
     }
@@ -44,4 +48,5 @@ enum TagColor: String, Sendable {
         case .brown: .brown
         }
     }
+    #endif
 }

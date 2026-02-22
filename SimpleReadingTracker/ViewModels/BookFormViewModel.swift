@@ -1,7 +1,9 @@
 import Foundation
 import Observation
 import SwiftData
+#if canImport(UIKit)
 import UIKit
+#endif
 
 enum BookFormMode {
     case add
@@ -90,7 +92,9 @@ final class BookFormViewModel {
             }
             if let url = result.coverImageURL {
                 coverImageURL = url
+                #if canImport(UIKit)
                 await downloadCoverImage(from: url)
+                #endif
             }
             if let pub = result.publisher { publisher = pub }
             if let date = result.publishedDate { publishedDate = date }
@@ -102,6 +106,7 @@ final class BookFormViewModel {
         isLookingUp = false
     }
 
+    #if canImport(UIKit)
     func downloadCoverImage(from urlString: String) async {
         guard selectedImageData == nil,
               let url = URL(string: urlString) else { return }
@@ -114,6 +119,7 @@ final class BookFormViewModel {
             // Cover download failed — user can still add one manually
         }
     }
+    #endif
 
     func save() {
         switch mode {
@@ -245,14 +251,17 @@ final class BookFormViewModel {
         return authors.first { $0.name.caseInsensitiveCompare(name) == .orderedSame }
     }
 
+    #if canImport(UIKit)
     func processSelectedImage(_ data: Data) {
         selectedImageData = Self.compressImage(data, maxWidth: 600, quality: 0.7)
     }
+    #endif
 
     func removeSelectedImage() {
         selectedImageData = nil
     }
 
+    #if canImport(UIKit)
     static func compressImage(_ data: Data, maxWidth: CGFloat, quality: CGFloat) -> Data? {
         guard let image = UIImage(data: data) else { return nil }
 
@@ -276,4 +285,5 @@ final class BookFormViewModel {
 
         return resizedData
     }
+    #endif
 }

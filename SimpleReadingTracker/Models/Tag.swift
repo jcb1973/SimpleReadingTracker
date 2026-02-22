@@ -1,6 +1,8 @@
 import Foundation
 import SwiftData
+#if canImport(SwiftUI)
 import SwiftUI
+#endif
 
 @Model
 final class Tag {
@@ -14,9 +16,11 @@ final class Tag {
         set { colorName = newValue?.rawValue }
     }
 
+    #if canImport(SwiftUI)
     var resolvedColor: Color {
         tagColor?.color ?? .accentColor
     }
+    #endif
 
     init(name: String, displayName: String? = nil) {
         self.name = name.lowercased()

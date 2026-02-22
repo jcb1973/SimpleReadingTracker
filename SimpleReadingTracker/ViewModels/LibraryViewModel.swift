@@ -7,7 +7,7 @@ enum TagFilterMode: String, Sendable {
     case or
 }
 
-@Observable
+@MainActor @Observable
 final class LibraryViewModel {
     private let modelContext: ModelContext
     private let searchService = SearchService()
