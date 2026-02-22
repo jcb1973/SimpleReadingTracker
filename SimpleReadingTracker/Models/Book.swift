@@ -3,7 +3,7 @@ import SwiftData
 
 @Model
 final class Book {
-    var title: String
+    var title: String = ""
     var isbn: String?
     var coverImageURL: String?
     @Attribute(.externalStorage) var coverImageData: Data?
@@ -11,9 +11,9 @@ final class Book {
     var publishedDate: String?
     var bookDescription: String?
     var pageCount: Int?
-    var statusRawValue: String
+    var statusRawValue: String = ReadingStatus.toRead.rawValue
     var rating: Int?
-    var dateAdded: Date
+    var dateAdded: Date = Date.now
     var dateStarted: Date?
     var dateFinished: Date?
     @Relationship(deleteRule: .cascade, inverse: \Note.book)

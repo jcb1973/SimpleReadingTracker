@@ -4,10 +4,8 @@ import SwiftUI
 
 @Model
 final class Tag {
-    #Unique<Tag>([\.name])
-
-    var name: String
-    var displayName: String
+    var name: String = ""
+    var displayName: String = ""
     var colorName: String?
     var books: [Book]
 

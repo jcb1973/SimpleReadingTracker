@@ -3,7 +3,7 @@ import SwiftData
 
 @Model
 final class Author {
-    var name: String
+    var name: String = ""
     var books: [Book]
 
     init(name: String) {

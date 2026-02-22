@@ -3,8 +3,8 @@ import SwiftData
 
 @Model
 final class Note {
-    var content: String
-    var createdAt: Date
+    var content: String = ""
+    var createdAt: Date = Date.now
     var book: Book?
 
     init(content: String, book: Book) {

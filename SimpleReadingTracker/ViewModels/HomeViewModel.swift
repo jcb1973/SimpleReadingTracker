@@ -158,15 +158,9 @@ final class HomeViewModel {
         dateFormatter.dateStyle = .short
 
         let existingAuthors = (try? modelContext.fetch(FetchDescriptor<Author>())) ?? []
-        let existingTags = (try? modelContext.fetch(FetchDescriptor<Tag>())) ?? []
-
         var authorCache: [String: Author] = [:]
         for author in existingAuthors {
             authorCache[author.name.lowercased()] = author
-        }
-        var tagCache: [String: Tag] = [:]
-        for tag in existingTags {
-            tagCache[tag.name] = tag
         }
 
         var importedCount = 0
@@ -231,13 +225,7 @@ final class HomeViewModel {
             if let tagsString = value(for: "Tags") {
                 let tagNames = tagsString.components(separatedBy: ";").map { $0.trimmingCharacters(in: .whitespaces) }
                 for displayName in tagNames where !displayName.isEmpty {
-                    let key = displayName.lowercased()
-                    if let existing = tagCache[key] {
-                        book.tags.append(existing)
-                    } else {
-                        let tag = Tag(name: displayName)
-                        modelContext.insert(tag)
-                        tagCache[key] = tag
+                    if let tag = TagDeduplicator.findOrCreate(named: displayName, in: modelContext) {
                         book.tags.append(tag)
                     }
                 }

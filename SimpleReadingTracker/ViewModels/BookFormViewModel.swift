@@ -191,15 +191,7 @@ final class BookFormViewModel {
 
     private func attachTags(to book: Book) {
         for name in tagNames {
-            let trimmed = name.trimmingCharacters(in: .whitespacesAndNewlines)
-            guard !trimmed.isEmpty else { continue }
-
-            let lowered = trimmed.lowercased()
-            let existing = findTag(named: lowered)
-            let tag = existing ?? Tag(name: trimmed)
-            if existing == nil {
-                modelContext.insert(tag)
-            }
+            guard let tag = TagDeduplicator.findOrCreate(named: name, in: modelContext) else { continue }
             book.tags.append(tag)
         }
     }
@@ -251,12 +243,6 @@ final class BookFormViewModel {
         let descriptor = FetchDescriptor<Author>()
         let authors = (try? modelContext.fetch(descriptor)) ?? []
         return authors.first { $0.name.caseInsensitiveCompare(name) == .orderedSame }
-    }
-
-    private func findTag(named lowercaseName: String) -> Tag? {
-        let descriptor = FetchDescriptor<Tag>()
-        let tags = (try? modelContext.fetch(descriptor)) ?? []
-        return tags.first { $0.name == lowercaseName }
     }
 
     func processSelectedImage(_ data: Data) {

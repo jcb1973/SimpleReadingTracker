@@ -3,10 +3,10 @@ import SwiftData
 
 @Model
 final class Quote {
-    var text: String
+    var text: String = ""
     var comment: String?
     var pageNumber: Int?
-    var createdAt: Date
+    var createdAt: Date = Date.now
     var book: Book?
 
     init(text: String, comment: String? = nil, pageNumber: Int? = nil, book: Book) {

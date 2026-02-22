@@ -25,10 +25,10 @@ struct SimpleReadingTrackerApp: App {
                             if isSeedingEnabled {
                                 config = ModelConfiguration(isStoredInMemoryOnly: true)
                             } else {
-                                config = ModelConfiguration()
+                                config = ModelConfiguration(cloudKitDatabase: .automatic)
                             }
                             #else
-                            config = ModelConfiguration()
+                            config = ModelConfiguration(cloudKitDatabase: .automatic)
                             #endif
                             let container = try ModelContainer(
                                 for: Book.self,
@@ -39,9 +39,14 @@ struct SimpleReadingTrackerApp: App {
                                 SampleDataSeeder.seed(into: container.mainContext)
                             }
                             #endif
+                            TagDeduplicator.deduplicateAll(in: container.mainContext)
                             modelContainer = container
                         } catch {
-                            modelContainer = try? ModelContainer(for: Book.self)
+                            let fallbackConfig = ModelConfiguration(cloudKitDatabase: .automatic)
+                            modelContainer = try? ModelContainer(
+                                for: Book.self,
+                                configurations: fallbackConfig
+                            )
                         }
                     }
             }

@@ -43,8 +43,7 @@ final class ManageTagsViewModel {
             return
         }
 
-        let tag = Tag(name: trimmed)
-        modelContext.insert(tag)
+        guard TagDeduplicator.findOrCreate(named: trimmed, in: modelContext) != nil else { return }
         save()
         newTagName = ""
         fetchTags()
